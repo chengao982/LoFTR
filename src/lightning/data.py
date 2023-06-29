@@ -26,6 +26,7 @@ from src.utils import comm
 from src.datasets.megadepth import MegaDepthDataset
 from src.datasets.scannet import ScanNetDataset
 from src.datasets.sampler import RandomConcatSampler
+from src.datasets.crop import CropDataset
 
 
 class MultiSceneDataModule(pl.LightningDataModule):
@@ -230,6 +231,18 @@ class MultiSceneDataModule(pl.LightningDataModule):
                                      depth_padding=self.mgdpt_depth_pad,
                                      augment_fn=augment_fn,
                                      coarse_scale=self.coarse_scale))
+            elif data_source == 'Crop':
+                datasets.append(
+                    CropDataset(data_root,
+                                npz_path,
+                                mode=mode,
+                                min_overlap_score=min_overlap_score,
+                                img_resize=self.mgdpt_img_resize,
+                                df=self.mgdpt_df,
+                                img_padding=self.mgdpt_img_pad,
+                                depth_padding=self.mgdpt_depth_pad,
+                                augment_fn=augment_fn,
+                                coarse_scale=self.coarse_scale))
             else:
                 raise NotImplementedError()
         return ConcatDataset(datasets)

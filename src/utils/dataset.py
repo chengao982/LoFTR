@@ -183,3 +183,50 @@ def read_scannet_intrinsic(path):
     """
     intrinsic = np.loadtxt(path, delimiter=' ')
     return intrinsic[:-1, :-1]
+
+
+# --- CROP ---
+
+def read_crop_gray(path, resize=None, df=None, padding=False, augment_fn=None):
+    """
+    Args:
+        resize (int, optional): the longer edge of resized images. None for no resize.
+        padding (bool): If set to 'True', zero-pad resized images to squared size.
+        augment_fn (callable, optional): augments images with pre-defined visual effects
+    Returns:
+        image (torch.tensor): (1, h, w)
+        mask (torch.tensor): (h, w)
+        scale (torch.tensor): [w/w_new, h/h_new]        
+    """
+    # read image
+    image = imread_gray(path, augment_fn, client=MEGADEPTH_CLIENT)
+
+    # resize image
+    w, h = image.shape[1], image.shape[0]
+    w_new, h_new = get_resized_wh(w, h, resize)
+    w_new, h_new = get_divisible_wh(w_new, h_new, df)
+
+    image = cv2.resize(image, (w_new, h_new))
+    scale = torch.tensor([w/w_new, h/h_new], dtype=torch.float)
+
+    if padding:  # padding
+        pad_to = max(h_new, w_new)
+        image, mask = pad_bottom_right(image, pad_to, ret_mask=True)
+    else:
+        mask = None
+
+    image = torch.from_numpy(image).float()[None] / 255  # (h, w) -> (1, h, w) and normalized
+    mask = torch.from_numpy(mask)
+
+    return image, mask, scale
+
+
+def read_crop_depth(path, pad_to=None):
+    if str(path).startswith('s3://'):
+        depth = load_array_from_s3(path, MEGADEPTH_CLIENT, None, use_h5py=True)
+    else:
+        depth = np.array(h5py.File(path, 'r')['depth_data']).squeeze()
+    if pad_to is not None:
+        depth, _ = pad_bottom_right(depth, pad_to, ret_mask=False)
+    depth = torch.from_numpy(depth).float()  # (h, w)
+    return depth
