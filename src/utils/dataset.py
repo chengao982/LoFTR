@@ -207,13 +207,13 @@ def read_crop_gray(path, resize=None, df=None, padding=False, augment_fn=None):
     w_new, h_new = get_divisible_wh(w_new, h_new, df)
 
     image = cv2.resize(image, (w_new, h_new))
-    print('after image', image.shape)
+    # print('after image', image.shape)
     scale = torch.tensor([w/w_new, h/h_new], dtype=torch.float)
 
     if padding:  # padding
         pad_to = max(h_new, w_new)
         image, mask = pad_bottom_right(image, pad_to, ret_mask=True)
-        print('padding image', image.shape)
+        # print('padding image', image.shape)
     else:
         mask = None
 
@@ -234,10 +234,10 @@ def read_crop_depth(path, pad_to=None):
     if max(w, h) > pad_to:
         w_new, h_new = get_resized_wh(w, h, pad_to)
         depth = cv2.resize(depth, (w_new, h_new))
-    print('after depth', depth.shape)
+    # print('after depth', depth.shape)
 
     if pad_to is not None:
         depth, _ = pad_bottom_right(depth, pad_to, ret_mask=False)
-        print('padding depth', depth.shape)
+        # print('padding depth', depth.shape)
     depth = torch.from_numpy(depth).float()  # (h, w)
     return depth

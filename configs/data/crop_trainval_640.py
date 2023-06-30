@@ -6,7 +6,7 @@ cfg.DATASET.TRAINVAL_DATA_SOURCE = "Crop"
 cfg.DATASET.TRAIN_DATA_ROOT = "data/crop/train"
 cfg.DATASET.TRAIN_NPZ_ROOT = f"{TRAIN_BASE_PATH}/scene_info"
 cfg.DATASET.TRAIN_LIST_PATH = f"{TRAIN_BASE_PATH}/trainvaltest_list/train_list.txt"
-cfg.DATASET.MIN_OVERLAP_SCORE_TRAIN = 0.0
+cfg.DATASET.MIN_OVERLAP_SCORE_TRAIN = 0.4
 
 TEST_BASE_PATH = "data/crop/index"
 cfg.DATASET.TEST_DATA_SOURCE = "Crop"
