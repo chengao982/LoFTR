@@ -89,8 +89,10 @@ class CropDataset(Dataset):
             depth0 = depth1 = torch.tensor([])
 
         # read intrinsics of original size
-        K_0 = torch.tensor(self.scene_info['intrinsics'][idx0].copy(), dtype=torch.float).reshape(3, 3)
-        K_1 = torch.tensor(self.scene_info['intrinsics'][idx1].copy(), dtype=torch.float).reshape(3, 3)
+        # K_0 = torch.tensor(self.scene_info['intrinsics'][idx0].copy(), dtype=torch.float).reshape(3, 3)
+        # K_1 = torch.tensor(self.scene_info['intrinsics'][idx1].copy(), dtype=torch.float).reshape(3, 3)
+        K_0 = torch.tensor(self.scene_info['intrinsics'].copy(), dtype=torch.float).reshape(3, 3)
+        K_1 = torch.tensor(self.scene_info['intrinsics'].copy(), dtype=torch.float).reshape(3, 3)
 
         # read and compute relative poses
         T0 = self.scene_info['poses'][idx0]
