@@ -206,7 +206,10 @@ def read_crop_gray(path, resize=None, df=None, padding=False, augment_fn=None):
     w_new, h_new = get_resized_wh(w, h, resize)
     w_new, h_new = get_divisible_wh(w_new, h_new, df)
 
+    print(w_new, h_new)
+
     image = cv2.resize(image, (w_new, h_new))
+    print(image.shape)
     scale = torch.tensor([w/w_new, h/h_new], dtype=torch.float)
 
     if padding:  # padding
