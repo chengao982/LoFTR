@@ -236,13 +236,13 @@ def read_crop_depth(path, resize=None, df=None, pad_to=None):
     w_new, h_new = get_resized_wh(w, h, resize)
     w_new, h_new = get_divisible_wh(w_new, h_new, df)
 
-    # print('depth', w_new, h_new)
+    print('depth', w_new, h_new)
 
     depth = cv2.resize(depth, (w_new, h_new))
-    # print('after depth', depth.shape)
+    print('after depth', depth.shape)
 
     if pad_to is not None:
-        depth, _ = pad_bottom_right(depth, pad_to, ret_mask=False)
+        depth, mask = pad_bottom_right(depth, pad_to, ret_mask=False)
         print('padding depth', depth.shape)
     depth = torch.from_numpy(depth).float()  # (h, w)
-    return depth
+    return depth, mask
