@@ -51,7 +51,7 @@ class CropDataset(Dataset):
 
         # parameters for image resizing, padding and depthmap padding
         if mode == 'train':
-            assert img_resize is not None# and img_padding and depth_padding
+            assert img_resize is not None and img_padding and depth_padding
         self.img_resize = img_resize
         self.df = df
         self.img_padding = img_padding
