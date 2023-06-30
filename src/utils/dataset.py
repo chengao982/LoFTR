@@ -237,7 +237,7 @@ def read_crop_depth(path, pad_to=None):
     print('after depth', depth.shape)
 
     if pad_to is not None:
-        depth, mask = pad_bottom_right(depth, pad_to, ret_mask=False)
+        depth, _ = pad_bottom_right(depth, pad_to, ret_mask=False)
         print('padding depth', depth.shape)
     depth = torch.from_numpy(depth).float()  # (h, w)
-    return depth, mask
+    return depth
