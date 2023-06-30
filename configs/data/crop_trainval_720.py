@@ -20,3 +20,5 @@ cfg.DATASET.MIN_OVERLAP_SCORE_TEST = 0.0   # for both test and val
 cfg.TRAINER.N_SAMPLES_PER_SUBSET = 1000
 
 cfg.DATASET.MGDPT_IMG_RESIZE = 720  # for training on 32GB meme GPUs
+cfg.DATASET.MGDPT_IMG_PAD = False  # pad img to square with size = MGDPT_IMG_RESIZE
+cfg.DATASET.MGDPT_DEPTH_PAD = False  # pad depthmap to square with size = 2000
