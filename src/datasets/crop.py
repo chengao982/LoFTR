@@ -82,9 +82,9 @@ class CropDataset(Dataset):
         # read depth. shape: (h, w)
         if self.mode in ['train', 'val']:
             depth0 = read_crop_depth(
-                osp.join(self.root_dir, self.scene_info['depth_paths'][idx0]), pad_to=self.depth_max_size)
+                osp.join(self.root_dir, self.scene_info['depth_paths'][idx0]), self.img_resize, self.df, pad_to=self.depth_max_size)
             depth1 = read_crop_depth(
-                osp.join(self.root_dir, self.scene_info['depth_paths'][idx1]), pad_to=self.depth_max_size)
+                osp.join(self.root_dir, self.scene_info['depth_paths'][idx1]), self.img_resize, self.df, pad_to=self.depth_max_size)
         else:
             depth0 = depth1 = torch.tensor([])
 

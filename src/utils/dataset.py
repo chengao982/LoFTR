@@ -206,10 +206,10 @@ def read_crop_gray(path, resize=None, df=None, padding=False, augment_fn=None):
     w_new, h_new = get_resized_wh(w, h, resize)
     w_new, h_new = get_divisible_wh(w_new, h_new, df)
 
-    print(w_new, h_new)
+    print('image', w_new, h_new)
 
     image = cv2.resize(image, (w_new, h_new))
-    print(image.shape)
+    print('after image', image.shape)
     scale = torch.tensor([w/w_new, h/h_new], dtype=torch.float)
 
     if padding:  # padding
@@ -224,11 +224,22 @@ def read_crop_gray(path, resize=None, df=None, padding=False, augment_fn=None):
     return image, mask, scale
 
 
-def read_crop_depth(path, pad_to=None):
+def read_crop_depth(path, resize=None, df=None, pad_to=None):
     if str(path).startswith('s3://'):
         depth = load_array_from_s3(path, MEGADEPTH_CLIENT, None, use_h5py=True)
     else:
         depth = np.array(h5py.File(path, 'r')['depth_data']).squeeze()
+
+    # resize image
+    w, h = depth.shape[1], depth.shape[0]
+    w_new, h_new = get_resized_wh(w, h, resize)
+    w_new, h_new = get_divisible_wh(w_new, h_new, df)
+
+    print('depth', w_new, h_new)
+
+    depth = cv2.resize(depth, (w_new, h_new))
+    print('after depth', depth.shape)
+
     if pad_to is not None:
         depth, _ = pad_bottom_right(depth, pad_to, ret_mask=False)
     depth = torch.from_numpy(depth).float()  # (h, w)
