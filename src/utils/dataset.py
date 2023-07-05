@@ -223,7 +223,7 @@ def read_crop_gray(path, resize=None, df=None, padding=False, augment_fn=None):
     return image, mask, scale
 
 
-def read_crop_depth(path, pad_to=None):
+def read_crop_depth(path, resize=None, df=None, pad_to=None):
     if str(path).startswith('s3://'):
         depth = load_array_from_s3(path, MEGADEPTH_CLIENT, None, use_h5py=True)
     else:
@@ -231,10 +231,13 @@ def read_crop_depth(path, pad_to=None):
 
     # resize image
     w, h = depth.shape[1], depth.shape[0]
-    if max(w, h) > pad_to:
-        w_new, h_new = get_resized_wh(w, h, pad_to)
-        depth = cv2.resize(depth, (w_new, h_new))
+    # if max(w, h) > pad_to:
+    #     w_new, h_new = get_resized_wh(w, h, pad_to)
+    #     depth = cv2.resize(depth, (w_new, h_new))
     # print('after depth', depth.shape)
+    w_new, h_new = get_resized_wh(w, h, resize)
+    w_new, h_new = get_divisible_wh(w_new, h_new, df)
+    depth = cv2.resize(depth, (w_new, h_new))
 
     if pad_to is not None:
         depth, _ = pad_bottom_right(depth, pad_to, ret_mask=False)
