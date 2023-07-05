@@ -20,7 +20,7 @@ def warp_kpts(kpts0, depth0, depth1, T_0to1, K0, K1):
     """
     kpts0_long = kpts0.round().long()
 
-    torch.set_printoptions(threshold=10000)
+    torch.set_printoptions(profile="full")
     # print("kpts0", kpts0.shape)
     # print("depth0", depth0.shape)
     # print("T_0to1", T_0to1.shape)
