@@ -206,7 +206,6 @@ def read_crop_gray(path, resize=None, df=None, padding=False, augment_fn=None, d
     if depth_max_size and max(h, w) > depth_max_size:
         w, h = get_resized_wh(w, h, depth_max_size)
         image = cv2.resize(image, (w, h))
-    print("image reshape", image.shape)
 
     # resize image
     w_new, h_new = get_resized_wh(w, h, resize)
@@ -240,7 +239,6 @@ def read_crop_depth(path, pad_to=None):
     if pad_to and max(w, h) > pad_to:
         w_new, h_new = get_resized_wh(w, h, pad_to)
         depth = cv2.resize(depth, (w_new, h_new))
-    print('depth reshape', depth.shape)
 
     if pad_to is not None:
         depth, _ = pad_bottom_right(depth, pad_to, ret_mask=False)
