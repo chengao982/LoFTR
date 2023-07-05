@@ -20,7 +20,7 @@ batch_size=8
 pin_memory=true
 exp_name="crop-ds-${TRAIN_IMG_SIZE}-bs=$(($n_gpus_per_node * $n_nodes * $batch_size))"
 
-nohup python -u ./train.py \
+python -u ./train.py \
     ${data_cfg_path} \
     ${main_cfg_path} \
     --exp_name=${exp_name} \
@@ -33,4 +33,4 @@ nohup python -u ./train.py \
     --num_sanity_val_steps=10 \
     --benchmark=True \
     --max_epochs=30 \
-    --ckpt_path="weights/outdoor_ds.ckpt" &
+    --ckpt_path="weights/outdoor_ds.ckpt"
