@@ -24,6 +24,7 @@ def warp_kpts(kpts0, depth0, depth1, T_0to1, K0, K1):
     print("depth0", depth0.shape)
     print("T_0to1", T_0to1.shape)
     print("K0", K0.shape)
+    print(kpts0_long)
 
     # Sample depth, get calculable_mask on depth != 0
     kpts0_depth = torch.stack(
