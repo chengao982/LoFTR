@@ -73,18 +73,18 @@ class CropDataset(Dataset):
         
         # TODO: Support augmentation & handle seeds for each worker correctly.
         image0, mask0, scale0 = read_crop_gray(
-            img_name0, self.img_resize, self.df, self.img_padding, None)
+            img_name0, self.img_resize, self.df, self.img_padding, None, depth_max_size=self.depth_max_size)
             # np.random.choice([self.augment_fn, None], p=[0.5, 0.5]))
         image1, mask1, scale1 = read_crop_gray(
-            img_name1, self.img_resize, self.df, self.img_padding, None)
+            img_name1, self.img_resize, self.df, self.img_padding, None, depth_max_size=self.depth_max_size)
             # np.random.choice([self.augment_fn, None], p=[0.5, 0.5]))
 
         # read depth. shape: (h, w)
         if self.mode in ['train', 'val']:
             depth0 = read_crop_depth(
-                osp.join(self.root_dir, self.scene_info['depth_paths'][idx0]), self.img_resize, self.df, pad_to=self.depth_max_size)
+                osp.join(self.root_dir, self.scene_info['depth_paths'][idx0]), pad_to=self.depth_max_size)
             depth1 = read_crop_depth(
-                osp.join(self.root_dir, self.scene_info['depth_paths'][idx1]), self.img_resize, self.df, pad_to=self.depth_max_size)
+                osp.join(self.root_dir, self.scene_info['depth_paths'][idx1]), pad_to=self.depth_max_size)
             
         else:
             depth0 = depth1 = torch.tensor([])
