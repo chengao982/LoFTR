@@ -43,6 +43,9 @@ def spvs_coarse(data, config):
     scale0 = scale * data['scale0'][:, None] if 'scale0' in data else scale
     scale1 = scale * data['scale1'][:, None] if 'scale0' in data else scale
     h0, w0, h1, w1 = map(lambda x: x // scale, [H0, W0, H1, W1])
+    print("N, H0, W0", N, H0, W0)
+    print("scale, 0, 1", scale, scale0, scale1)
+    print("h0, w0, h1, w1", h0, w0, h1, w1)
 
     # 2. warp grids
     # create kpts in meshgrid and resize them to image resolution
@@ -50,6 +53,8 @@ def spvs_coarse(data, config):
     grid_pt0_i = scale0 * grid_pt0_c
     grid_pt1_c = create_meshgrid(h1, w1, False, device).reshape(1, h1*w1, 2).repeat(N, 1, 1)
     grid_pt1_i = scale1 * grid_pt1_c
+    print(grid_pt0_c)
+    print(grid_pt0_c.shape)
 
     # mask padded region to (0, 0), so no need to manually mask conf_matrix_gt
     if 'mask0' in data:
