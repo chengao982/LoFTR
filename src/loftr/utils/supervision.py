@@ -89,7 +89,9 @@ def spvs_coarse(data, config):
 
     conf_matrix_gt[b_ids, i_ids, j_ids] = 1
     data.update({'conf_matrix_gt': conf_matrix_gt})
-    print("conf_matrix_gt", conf_matrix_gt)
+
+    print("conf_matrix_gt.shape", conf_matrix_gt.shape)
+    print("conf_matrix_gt", torch.sum(conf_matrix_gt))
     print("-----------------------------")
 
     # 5. save coarse matches(gt) for training fine level
