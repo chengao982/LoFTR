@@ -187,7 +187,7 @@ def read_scannet_intrinsic(path):
 
 # --- CROP ---
 
-def read_crop_gray(path, resize=None, df=None, padding=False, augment_fn=None, depth_max_size=None):
+def read_crop_gray(path, resize=None, df=None, augment_fn=None):
     """
     Args:
         resize (int, optional): the longer edge of resized images. None for no resize.
@@ -202,11 +202,6 @@ def read_crop_gray(path, resize=None, df=None, padding=False, augment_fn=None, d
     image = imread_gray(path, augment_fn, client=MEGADEPTH_CLIENT)
     w, h = image.shape[1], image.shape[0]
 
-    # pre-resize to ensure the longer edge is smaller than depth_max_size
-    if depth_max_size and max(h, w) > depth_max_size:
-        w, h = get_resized_wh(w, h, depth_max_size)
-        image = cv2.resize(image, (w, h))
-
     # resize image
     w_new, h_new = get_resized_wh(w, h, resize)
     w_new, h_new = get_divisible_wh(w_new, h_new, df)
@@ -215,33 +210,17 @@ def read_crop_gray(path, resize=None, df=None, padding=False, augment_fn=None, d
     # print('after image', image.shape)
     scale = torch.tensor([w/w_new, h/h_new], dtype=torch.float)
 
-    if padding:  # padding
-        pad_to = max(h_new, w_new)
-        image, mask = pad_bottom_right(image, pad_to, ret_mask=True)
-        # print('padding image', image.shape)
-    else:
-        mask = None
-
     image = torch.from_numpy(image).float()[None] / 255  # (h, w) -> (1, h, w) and normalized
-    mask = torch.from_numpy(mask)
 
-    return image, mask, scale
+    return image, scale
 
 
-def read_crop_depth(path, pad_to=None):
+def read_crop_depth(path):
     if str(path).startswith('s3://'):
         depth = load_array_from_s3(path, MEGADEPTH_CLIENT, None, use_h5py=True)
     else:
         depth = np.array(h5py.File(path, 'r')['depth_data']).squeeze()
 
-    # resize image
-    w, h = depth.shape[1], depth.shape[0]
-    if pad_to and max(w, h) > pad_to:
-        w_new, h_new = get_resized_wh(w, h, pad_to)
-        depth = cv2.resize(depth, (w_new, h_new))
-
-    if pad_to is not None:
-        depth, _ = pad_bottom_right(depth, pad_to, ret_mask=False)
-        # print('padding depth', depth.shape)
     depth = torch.from_numpy(depth).float()  # (h, w)
+    # print('depth.shape', depth.shape)
     return depth

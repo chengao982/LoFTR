@@ -51,11 +51,9 @@ class CropDataset(Dataset):
 
         # parameters for image resizing, padding and depthmap padding
         if mode == 'train':
-            assert img_resize is not None and img_padding and depth_padding
+            assert img_resize is not None # and img_padding and depth_padding
         self.img_resize = img_resize
         self.df = df
-        self.img_padding = img_padding
-        self.depth_max_size = 2000 if depth_padding else None  # the upperbound of depthmaps size in crop.
 
         # for training LoFTR
         self.augment_fn = augment_fn if mode == 'train' else None
@@ -72,19 +70,19 @@ class CropDataset(Dataset):
         img_name1 = osp.join(self.root_dir, self.scene_info['image_paths'][idx1])
         
         # TODO: Support augmentation & handle seeds for each worker correctly.
-        image0, mask0, scale0 = read_crop_gray(
-            img_name0, self.img_resize, self.df, self.img_padding, None, depth_max_size=self.depth_max_size)
+        image0, scale0 = read_crop_gray(
+            img_name0, self.img_resize, self.df, None)
             # np.random.choice([self.augment_fn, None], p=[0.5, 0.5]))
-        image1, mask1, scale1 = read_crop_gray(
-            img_name1, self.img_resize, self.df, self.img_padding, None, depth_max_size=self.depth_max_size)
+        image1, scale1 = read_crop_gray(
+            img_name1, self.img_resize, self.df, None)
             # np.random.choice([self.augment_fn, None], p=[0.5, 0.5]))
 
         # read depth. shape: (h, w)
         if self.mode in ['train', 'val']:
             depth0 = read_crop_depth(
-                osp.join(self.root_dir, self.scene_info['depth_paths'][idx0]), pad_to=self.depth_max_size)
+                osp.join(self.root_dir, self.scene_info['depth_paths'][idx0]))
             depth1 = read_crop_depth(
-                osp.join(self.root_dir, self.scene_info['depth_paths'][idx1]), pad_to=self.depth_max_size)
+                osp.join(self.root_dir, self.scene_info['depth_paths'][idx1]))
             
         else:
             depth0 = depth1 = torch.tensor([])
@@ -92,8 +90,7 @@ class CropDataset(Dataset):
         # read intrinsics of original size
         # K_0 = torch.tensor(self.scene_info['intrinsics'][idx0].copy(), dtype=torch.float).reshape(3, 3)
         # K_1 = torch.tensor(self.scene_info['intrinsics'][idx1].copy(), dtype=torch.float).reshape(3, 3)
-        K_0 = torch.tensor(self.scene_info['intrinsics'].copy(), dtype=torch.float).reshape(3, 3)
-        K_1 = torch.tensor(self.scene_info['intrinsics'].copy(), dtype=torch.float).reshape(3, 3)
+        K_0 = K_1 = torch.tensor(self.scene_info['intrinsics'].copy(), dtype=torch.float).reshape(3, 3)
 
         # read and compute relative poses
         T0 = self.scene_info['poses'][idx0]
@@ -117,14 +114,5 @@ class CropDataset(Dataset):
             'pair_id': idx,
             'pair_names': (self.scene_info['image_paths'][idx0], self.scene_info['image_paths'][idx1]),
         }
-
-        # for LoFTR training
-        if mask0 is not None:  # img_padding is True
-            if self.coarse_scale:
-                [ts_mask_0, ts_mask_1] = F.interpolate(torch.stack([mask0, mask1], dim=0)[None].float(),
-                                                       scale_factor=self.coarse_scale,
-                                                       mode='nearest',
-                                                       recompute_scale_factor=False)[0].bool()
-            data.update({'mask0': ts_mask_0, 'mask1': ts_mask_1})
 
         return data
