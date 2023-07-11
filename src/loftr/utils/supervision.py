@@ -64,8 +64,6 @@ def spvs_coarse(data, config):
     w_pt0_c = w_pt0_i / scale1
     w_pt1_c = w_pt1_i / scale0
 
-    print("w_pt0_c.shape", w_pt0_c.shape)
-
     # 3. check if mutual nearest neighbor
     w_pt0_c_round = w_pt0_c[:, :, :].round().long()
     nearest_index1 = w_pt0_c_round[..., 0] + w_pt0_c_round[..., 1] * w1
@@ -90,9 +88,9 @@ def spvs_coarse(data, config):
     conf_matrix_gt[b_ids, i_ids, j_ids] = 1
     data.update({'conf_matrix_gt': conf_matrix_gt})
 
-    print("conf_matrix_gt.shape", conf_matrix_gt.shape)
-    print("conf_matrix_gt", torch.sum(conf_matrix_gt))
-    print("-----------------------------")
+    # print("conf_matrix_gt.shape", conf_matrix_gt.shape)
+    # print("conf_matrix_gt", torch.sum(conf_matrix_gt))
+    # print("-----------------------------")
 
     # 5. save coarse matches(gt) for training fine level
     if len(b_ids) == 0:

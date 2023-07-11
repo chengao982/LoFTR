@@ -61,9 +61,9 @@ def warp_kpts(kpts0, depth0, depth1, T_0to1, K0, K1):
     consistent_mask = ((w_kpts0_depth - w_kpts0_depth_computed) / w_kpts0_depth).abs() < 0.2
     valid_mask = nonzero_mask * covisible_mask * consistent_mask
 
-    print("nonzero_mask", torch.sum(nonzero_mask), nonzero_mask.shape[0])
-    print("covisible_mask", torch.sum(covisible_mask), covisible_mask.shape[0])
-    print("consistent_mask", torch.sum(consistent_mask), consistent_mask.shape[0])
-    print("valid_mask", torch.sum(valid_mask), valid_mask.shape[0])
+    # print("nonzero_mask", torch.sum(nonzero_mask), nonzero_mask.shape)
+    # print("covisible_mask", torch.sum(covisible_mask), covisible_mask.shape)
+    # print("consistent_mask", torch.sum(consistent_mask), consistent_mask.shape)
+    # print("valid_mask", torch.sum(valid_mask), valid_mask.shape)
 
     return valid_mask, w_kpts0
