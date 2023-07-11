@@ -20,11 +20,18 @@ def warp_kpts(kpts0, depth0, depth1, T_0to1, K0, K1):
     """
     kpts0_long = kpts0.round().long()
 
+    torch.set_printoptions(profile="full")
+    print(kpts0_long)
+    print("-----------------------------")
+
     # Sample depth, get calculable_mask on depth != 0
     kpts0_depth = torch.stack(
         [depth0[i, kpts0_long[i, :, 1], kpts0_long[i, :, 0]] for i in range(kpts0.shape[0])], dim=0
     )  # (N, L)
     nonzero_mask = kpts0_depth != 0
+
+    print(kpts0_depth)
+    print("-----------------------------")
 
     # Unproject
     kpts0_h = torch.cat([kpts0, torch.ones_like(kpts0[:, :, [0]])], dim=-1) * kpts0_depth[..., None]  # (N, L, 3)
@@ -38,6 +45,9 @@ def warp_kpts(kpts0, depth0, depth1, T_0to1, K0, K1):
     w_kpts0_h = (K1 @ w_kpts0_cam).transpose(2, 1)  # (N, L, 3)
     w_kpts0 = w_kpts0_h[:, :, :2] / (w_kpts0_h[:, :, [2]] + 1e-4)  # (N, L, 2), +1e-4 to avoid zero depth
 
+    print(w_kpts0)
+    print("-----------------------------")
+
     # Covisible Check
     h, w = depth1.shape[1:3]
     covisible_mask = (w_kpts0[:, :, 0] > 0) * (w_kpts0[:, :, 0] < w-1) * \
@@ -50,5 +60,10 @@ def warp_kpts(kpts0, depth0, depth1, T_0to1, K0, K1):
     )  # (N, L)
     consistent_mask = ((w_kpts0_depth - w_kpts0_depth_computed) / w_kpts0_depth).abs() < 0.2
     valid_mask = nonzero_mask * covisible_mask * consistent_mask
+
+    print("nonzero_mask", torch.sum(nonzero_mask)/nonzero_mask.shape[0])
+    print("covisible_mask", torch.sum(covisible_mask)/covisible_mask.shape[0])
+    print("consistent_mask", torch.sum(consistent_mask)/consistent_mask.shape[0])
+    print("valid_mask", torch.sum(valid_mask)/valid_mask.shape[0])
 
     return valid_mask, w_kpts0

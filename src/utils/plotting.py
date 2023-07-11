@@ -11,7 +11,7 @@ def _compute_conf_thresh(data):
     elif dataset_name == 'megadepth':
         thr = 1e-4
     elif dataset_name == 'crop':
-        thr = 5e-4
+        thr = 1e-3
     else:
         raise ValueError(f'Unknown dataset: {dataset_name}')
     return thr
@@ -96,6 +96,7 @@ def _make_evaluation_figure(data, b_id, alpha='dynamic'):
     color = error_colormap(epi_errs, conf_thr, alpha=alpha)
     
     text = [
+        f'pair_names {data["pair_names"]}',
         f'#Matches {len(kpts0)}',
         f'Precision({conf_thr:.2e}) ({100 * precision:.1f}%): {n_correct}/{len(kpts0)}',
         f'Recall({conf_thr:.2e}) ({100 * recall:.1f}%): {n_correct}/{n_gt_matches}'
