@@ -11,7 +11,7 @@ def _compute_conf_thresh(data):
     elif dataset_name == 'megadepth':
         thr = 1e-4
     elif dataset_name == 'crop':
-        thr = 1e-2
+        thr = 1e-3
     else:
         raise ValueError(f'Unknown dataset: {dataset_name}')
     return thr

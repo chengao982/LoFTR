@@ -157,31 +157,47 @@ def compute_supervision_fine(data, config):
         raise NotImplementedError
 
 import matplotlib.pyplot as plt
-
+import matplotlib.lines as lines
 
 def visualize_coarse_matches(data):
     conf_matrix_gt = data['conf_matrix_gt']
     spv_w_pt0_i = data['spv_w_pt0_i']
     spv_pt1_i = data['spv_pt1_i']
 
-    # Plot the image0
-    plt.subplot(121)
-    plt.imshow(data['image0'].squeeze().cpu())
-    plt.title('Image 0')
+    img0 = data['image0'].squeeze().permute(1, 2, 0).cpu()
+    img1 = data['image1'].squeeze().permute(1, 2, 0).cpu()
+    mkpts0 = spv_w_pt0_i[data['spv_b_ids'], data['spv_i_ids']].cpu().numpy()
+    mkpts1 = spv_pt1_i[data['spv_b_ids'], data['spv_j_ids']].cpu().numpy()
 
-    # Plot the image1
-    plt.subplot(122)
-    plt.imshow(data['image1'].squeeze().cpu())
-    plt.title('Image 1')
+    fig, axes = plt.subplots(1, 2, figsize=(10, 6), dpi=75)
+    axes[0].imshow(img0, cmap='gray')
+    axes[1].imshow(img1, cmap='gray')
 
-    # Plot the matches
-    for b, i, j in zip(data['spv_b_ids'], data['spv_i_ids'], data['spv_j_ids']):
-        pt0 = spv_w_pt0_i[b, i].cpu().numpy()
-        pt1 = spv_pt1_i[b, j].cpu().numpy()
+    for i in range(2):   # clear all frames
+        axes[i].get_yaxis().set_ticks([])
+        axes[i].get_xaxis().set_ticks([])
+        for spine in axes[i].spines.values():
+            spine.set_visible(False)
 
-        plt.plot([pt0[0], pt1[0]], [pt0[1], pt1[1]], color='r')
+    color = 'r'  # Color for lines and scatter points
+    fig.canvas.draw()
+    transFigure = fig.transFigure.inverted()
+    fkpts0 = transFigure.transform(axes[0].transData.transform(mkpts0))
+    fkpts1 = transFigure.transform(axes[1].transData.transform(mkpts1))
 
-    fig = plt.gcf()
-    plt.close(fig)
+    lines_list = [lines.Line2D((fkpts0[i, 0], fkpts1[i, 0]), (fkpts0[i, 1], fkpts1[i, 1]),
+                              transform=fig.transFigure, c=color, linewidth=1)
+                  for i in range(len(mkpts0))]
     
-    return fig
+    for line in lines_list:
+        fig.lines.append(line)
+
+    axes[0].scatter(mkpts0[:, 0], mkpts0[:, 1], c=color, s=4)
+    axes[1].scatter(mkpts1[:, 0], mkpts1[:, 1], c=color, s=4)
+
+    # Save the figure to a tensor
+    fig.canvas.draw()
+    image_tensor = torch.from_numpy(np.array(fig.canvas.renderer._renderer)).permute(2, 0, 1).unsqueeze(0).float() / 255.0
+    plt.close(fig)
+
+    return image_tensor
