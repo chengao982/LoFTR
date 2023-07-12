@@ -85,6 +85,11 @@ class PL_LoFTR(pl.LightningModule):
         
         with self.profiler.profile("LoFTR"):
             self.matcher(batch)
+
+        compute_symmetrical_epipolar_errors(batch)  # compute epi_errs for each match
+        figures = make_matching_figures(batch, self.config, self.config.TRAINER.PLOT_MODE)
+        for k, v in figures.items():
+            self.logger.experiment.add_figure(f'train_coarse_match/{k}', v, self.global_step)
         
         with self.profiler.profile("Compute fine supervision"):
             compute_supervision_fine(batch, self.config)

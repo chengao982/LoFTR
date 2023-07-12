@@ -132,7 +132,7 @@ _CN.TRAINER.PLOT_MODE = 'evaluation'  # ['evaluation', 'confidence']
 _CN.TRAINER.PLOT_MATCHES_ALPHA = 'dynamic'
 
 # geometric metrics and pose solver
-_CN.TRAINER.EPI_ERR_THR = 5e-4  # recommendation: 5e-4 for ScanNet, 1e-4 for MegaDepth (from SuperGlue)
+_CN.TRAINER.EPI_ERR_THR = 1e-3  # recommendation: 5e-4 for ScanNet, 1e-4 for MegaDepth (from SuperGlue)
 _CN.TRAINER.POSE_GEO_MODEL = 'E'  # ['E', 'F', 'H']
 _CN.TRAINER.POSE_ESTIMATION_METHOD = 'RANSAC'  # [RANSAC, DEGENSAC, MAGSAC]
 _CN.TRAINER.RANSAC_PIXEL_THR = 0.5
