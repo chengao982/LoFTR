@@ -163,51 +163,48 @@ def compute_supervision_fine(data, config):
     else:
         raise NotImplementedError
 
-# import matplotlib.pyplot as plt
-# import matplotlib.lines as lines
+import matplotlib.pyplot as plt
+import matplotlib.lines as lines
 
-# def visualize_coarse_matches(data):
-#     conf_matrix_gt = data['conf_matrix_gt']
-#     spv_w_pt0_i = data['spv_w_pt0_i']
-#     spv_pt1_i = data['spv_pt1_i']
+def visualize_coarse_matches(data):
+    conf_matrix_gt = data['conf_matrix_gt']
+    spv_w_pt0_i = data['spv_w_pt0_i']
+    spv_pt1_i = data['spv_pt1_i']
 
-#     img0 = data['image0'].squeeze().cpu()
-#     img1 = data['image1'].squeeze().cpu()
-#     mkpts0 = spv_w_pt0_i[data['spv_b_ids'], data['spv_i_ids']].cpu().numpy()
-#     mkpts1 = spv_pt1_i[data['spv_b_ids'], data['spv_j_ids']].cpu().numpy()
+    img0 = data['image0'].squeeze().cpu()
+    img1 = data['image1'].squeeze().cpu()
+    mkpts0 = spv_w_pt0_i[data['spv_b_ids'], data['spv_i_ids']].cpu().numpy()
+    mkpts1 = spv_pt1_i[data['spv_b_ids'], data['spv_j_ids']].cpu().numpy()
 
-#     fig, axes = plt.subplots(1, 2, figsize=(10, 6), dpi=75)
-#     axes[0].imshow(img0, cmap='gray')
-#     axes[1].imshow(img1, cmap='gray')
+    fig, axes = plt.subplots(1, 2, figsize=(10, 6), dpi=75)
+    axes[0].imshow(img0, cmap='gray')
+    axes[1].imshow(img1, cmap='gray')
 
-#     for i in range(2):   # clear all frames
-#         axes[i].get_yaxis().set_ticks([])
-#         axes[i].get_xaxis().set_ticks([])
-#         for spine in axes[i].spines.values():
-#             spine.set_visible(False)
+    for i in range(2):   # clear all frames
+        axes[i].get_yaxis().set_ticks([])
+        axes[i].get_xaxis().set_ticks([])
+        for spine in axes[i].spines.values():
+            spine.set_visible(False)
 
-#     color = 'r'  # Color for lines and scatter points
+    color = 'r'  # Color for lines and scatter points
 
-#     # Convert image coordinates to figure coordinates
-#     img0_shape = img0.shape[:2]
-#     img1_shape = img1.shape[:2]
-#     fig_trans = fig.transFigure
-#     axes_trans0 = axes[0].transData.transform
-#     axes_trans1 = axes[1].transData.transform
+    fig.canvas.draw()
+    transFigure = fig.transFigure.inverted()
+    fkpts0 = transFigure.transform(axes[0].transData.transform(mkpts0))
+    fkpts1 = transFigure.transform(axes[1].transData.transform(mkpts1))
 
-#     mkpts0_fig = [fig_trans.transform(axes_trans0([x, y])) for x, y in mkpts0]
-#     mkpts1_fig = [fig_trans.transform(axes_trans1([x, y])) for x, y in mkpts1]
+    lines_list = [lines.Line2D((fkpts0[i, 0], fkpts1[i, 0]), (fkpts0[i, 1], fkpts1[i, 1]),
+                              transform=fig.transFigure, c=color, linewidth=1)
+                  for i in range(len(mkpts0))]
+    
+    for line in lines_list:
+        fig.lines.append(line)
 
-#     for i, (pt0_fig, pt1_fig) in enumerate(zip(mkpts0_fig, mkpts1_fig)):
-#         line = plt.Line2D((pt0_fig[0], pt1_fig[0] + img0_shape[1]), (pt0_fig[1], pt1_fig[1]),
-#                           transform=fig_trans, color=color)
-#         fig.lines.append(line)
+    axes[0].scatter(mkpts0[:, 0], mkpts0[:, 1], c=color, s=4)
+    axes[1].scatter(mkpts1[:, 0], mkpts1[:, 1], c=color, s=4)
 
-#         axes[0].scatter(pt0_fig[0], pt0_fig[1], c=color, s=4)
-#         axes[1].scatter(pt1_fig[0] + img0_shape[1], pt1_fig[1], c=color, s=4)
+    # Save the figure to a tensor
+    fig.canvas.draw()
+    plt.close(fig)
 
-#     # Save the figure to a tensor
-#     fig.canvas.draw()
-#     plt.close(fig)
-
-#     return fig
+    return fig
