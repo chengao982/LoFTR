@@ -112,15 +112,15 @@ def spvs_coarse(data, config):
         'spv_pt1_i': grid_pt1_i
     })
 
-    print("spv_w_pt0_i", w_pt0_i.shape)
-    # print("spv_w_pt0_i", w_pt0_i)
-    print("spv_pt1_i", grid_pt1_i.shape)
-    # print("spv_pt1_i", grid_pt1_i)
-    print("i_ids", i_ids.shape)
-    print("i_ids", i_ids)
-    print("j_ids", j_ids.shape)
-    print("j_ids", j_ids)
-    print("_________________________________")
+    # print("spv_w_pt0_i", w_pt0_i.shape)
+    # # print("spv_w_pt0_i", w_pt0_i)
+    # print("spv_pt1_i", grid_pt1_i.shape)
+    # # print("spv_pt1_i", grid_pt1_i)
+    # print("i_ids", i_ids.shape)
+    # print("i_ids", i_ids)
+    # print("j_ids", j_ids.shape)
+    # print("j_ids", j_ids)
+    # print("_________________________________")
 
 
 def compute_supervision_coarse(data, config):
@@ -130,6 +130,8 @@ def compute_supervision_coarse(data, config):
         spvs_coarse(data, config)
     else:
         raise ValueError(f'Unknown data source: {data_source}')
+    
+    return visualize_coarse_matches(data)
 
 ##############  ↓  Fine-Level supervision  ↓  ##############
 
