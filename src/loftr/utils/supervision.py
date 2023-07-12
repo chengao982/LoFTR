@@ -197,7 +197,6 @@ def visualize_coarse_matches(data):
 
     # Save the figure to a tensor
     fig.canvas.draw()
-    image_tensor = torch.from_numpy(np.array(fig.canvas.renderer._renderer)).permute(2, 0, 1).unsqueeze(0).float() / 255.0
     plt.close(fig)
 
-    return image_tensor
+    return fig
