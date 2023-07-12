@@ -113,9 +113,9 @@ def spvs_coarse(data, config):
     })
 
     print("spv_w_pt0_i", w_pt0_i.shape)
-    print("spv_w_pt0_i", w_pt0_i)
+    # print("spv_w_pt0_i", w_pt0_i)
     print("spv_pt1_i", grid_pt1_i.shape)
-    print("spv_pt1_i", grid_pt1_i)
+    # print("spv_pt1_i", grid_pt1_i)
 
 
 def compute_supervision_coarse(data, config):
