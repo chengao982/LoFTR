@@ -81,8 +81,10 @@ class PL_LoFTR(pl.LightningModule):
     
     def _trainval_inference(self, batch):
         with self.profiler.profile("Compute coarse supervision"):
-            compute_supervision_coarse(batch, self.config)
-        
+            fig = compute_supervision_coarse(batch, self.config)
+            self.logger.experiment.add_figure(f'train_gt_match', fig, self.global_step)
+
+
         with self.profiler.profile("LoFTR"):
             self.matcher(batch)
 

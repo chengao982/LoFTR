@@ -120,6 +120,8 @@ def compute_supervision_coarse(data, config):
         spvs_coarse(data, config)
     else:
         raise ValueError(f'Unknown data source: {data_source}')
+    
+    return visualize_coarse_matches(data)
 
 
 ##############  ↓  Fine-Level supervision  ↓  ##############
@@ -153,3 +155,33 @@ def compute_supervision_fine(data, config):
         spvs_fine(data, config)
     else:
         raise NotImplementedError
+
+import matplotlib.pyplot as plt
+
+
+def visualize_coarse_matches(data):
+    conf_matrix_gt = data['conf_matrix_gt']
+    spv_w_pt0_i = data['spv_w_pt0_i']
+    spv_pt1_i = data['spv_pt1_i']
+
+    # Plot the image0
+    plt.subplot(121)
+    plt.imshow(data['image0'].squeeze().permute(1, 2, 0).cpu())
+    plt.title('Image 0')
+
+    # Plot the image1
+    plt.subplot(122)
+    plt.imshow(data['image1'].squeeze().permute(1, 2, 0).cpu())
+    plt.title('Image 1')
+
+    # Plot the matches
+    for b, i, j in zip(data['spv_b_ids'], data['spv_i_ids'], data['spv_j_ids']):
+        pt0 = spv_w_pt0_i[b, i].cpu().numpy()
+        pt1 = spv_pt1_i[b, j].cpu().numpy()
+
+        plt.plot([pt0[0], pt1[0]], [pt0[1], pt1[1]], color='r')
+
+    fig = plt.gcf()
+    plt.close(fig)
+    
+    return fig
