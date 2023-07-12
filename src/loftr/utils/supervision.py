@@ -164,8 +164,8 @@ def visualize_coarse_matches(data):
     spv_w_pt0_i = data['spv_w_pt0_i']
     spv_pt1_i = data['spv_pt1_i']
 
-    img0 = data['image0'].squeeze().permute(1, 2, 0).cpu()
-    img1 = data['image1'].squeeze().permute(1, 2, 0).cpu()
+    img0 = data['image0'].squeeze().cpu()
+    img1 = data['image1'].squeeze().cpu()
     mkpts0 = spv_w_pt0_i[data['spv_b_ids'], data['spv_i_ids']].cpu().numpy()
     mkpts1 = spv_pt1_i[data['spv_b_ids'], data['spv_j_ids']].cpu().numpy()
 
