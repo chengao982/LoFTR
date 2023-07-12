@@ -166,12 +166,12 @@ def visualize_coarse_matches(data):
 
     # Plot the image0
     plt.subplot(121)
-    plt.imshow(data['image0'].squeeze().permute(1, 2, 0).cpu())
+    plt.imshow(data['image0'].squeeze().cpu())
     plt.title('Image 0')
 
     # Plot the image1
     plt.subplot(122)
-    plt.imshow(data['image1'].squeeze().permute(1, 2, 0).cpu())
+    plt.imshow(data['image1'].squeeze().cpu())
     plt.title('Image 1')
 
     # Plot the matches
