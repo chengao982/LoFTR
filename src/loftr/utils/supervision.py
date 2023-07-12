@@ -164,8 +164,8 @@ def visualize_coarse_matches(data):
     spv_w_pt0_i = data['spv_w_pt0_i']
     spv_pt1_i = data['spv_pt1_i']
 
-    img0 = data['image0'].squeeze().cpu()
-    img1 = data['image1'].squeeze().cpu()
+    img0 = data['image0'].squeeze().permute(1, 2, 0).cpu()
+    img1 = data['image1'].squeeze().permute(1, 2, 0).cpu()
     mkpts0 = spv_w_pt0_i[data['spv_b_ids'], data['spv_i_ids']].cpu().numpy()
     mkpts1 = spv_pt1_i[data['spv_b_ids'], data['spv_j_ids']].cpu().numpy()
 
@@ -180,20 +180,24 @@ def visualize_coarse_matches(data):
             spine.set_visible(False)
 
     color = 'r'  # Color for lines and scatter points
-    fig.canvas.draw()
-    transFigure = fig.transFigure.inverted()
-    fkpts0 = transFigure.transform(axes[0].transData.transform(mkpts0))
-    fkpts1 = transFigure.transform(axes[1].transData.transform(mkpts1))
 
-    lines_list = [lines.Line2D((fkpts0[i, 0], fkpts1[i, 0]), (fkpts0[i, 1], fkpts1[i, 1]),
-                              transform=fig.transFigure, c=color, linewidth=1)
-                  for i in range(len(mkpts0))]
-    
-    for line in lines_list:
+    # Convert image coordinates to figure coordinates
+    img0_shape = img0.shape[:2]
+    img1_shape = img1.shape[:2]
+    fig_trans = fig.transFigure
+    axes_trans0 = axes[0].transData.transform
+    axes_trans1 = axes[1].transData.transform
+
+    mkpts0_fig = [fig_trans.transform(axes_trans0([x, y])) for x, y in mkpts0]
+    mkpts1_fig = [fig_trans.transform(axes_trans1([x, y])) for x, y in mkpts1]
+
+    for i, (pt0_fig, pt1_fig) in enumerate(zip(mkpts0_fig, mkpts1_fig)):
+        line = plt.Line2D((pt0_fig[0], pt1_fig[0] + img0_shape[1]), (pt0_fig[1], pt1_fig[1]),
+                          transform=fig_trans, color=color)
         fig.lines.append(line)
 
-    axes[0].scatter(mkpts0[:, 0], mkpts0[:, 1], c=color, s=4)
-    axes[1].scatter(mkpts1[:, 0], mkpts1[:, 1], c=color, s=4)
+        axes[0].scatter(pt0_fig[0], pt0_fig[1], c=color, s=4)
+        axes[1].scatter(pt1_fig[0] + img0_shape[1], pt1_fig[1], c=color, s=4)
 
     # Save the figure to a tensor
     fig.canvas.draw()
