@@ -95,8 +95,8 @@ class CropDataset(Dataset):
         # read and compute relative poses
         T0 = self.scene_info['poses'][idx0]
         T1 = self.scene_info['poses'][idx1]
-        T_0to1 = torch.tensor(np.matmul(T1, np.linalg.inv(T0)), dtype=torch.float)[:4, :4]  # (4, 4)
-        T_1to0 = T_0to1.inverse()
+        T_1to0 = torch.tensor(np.matmul(T1, np.linalg.inv(T0)), dtype=torch.float)[:4, :4]  # (4, 4)
+        T_0to1 = T_1to0.inverse()
 
         data = {
             'image0': image0,  # (1, h, w)
