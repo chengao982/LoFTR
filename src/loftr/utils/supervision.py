@@ -66,7 +66,10 @@ def spvs_coarse(data, config):
 
     # 3. check if mutual nearest neighbor
     w_pt0_c_round = w_pt0_c[:, :, :].round().long()
+
+    print("w_pt0_c_round", w_pt0_c_round)
     nearest_index1 = w_pt0_c_round[..., 0] + w_pt0_c_round[..., 1] * w1
+    print("nearest_index1", nearest_index1)
     w_pt1_c_round = w_pt1_c[:, :, :].round().long()
     nearest_index0 = w_pt1_c_round[..., 0] + w_pt1_c_round[..., 1] * w0
 
@@ -77,8 +80,11 @@ def spvs_coarse(data, config):
     nearest_index0[out_bound_mask(w_pt1_c_round, w0, h0)] = 0
 
     loop_back = torch.stack([nearest_index0[_b][_i] for _b, _i in enumerate(nearest_index1)], dim=0)
+    print("loop_back", loop_back)
     correct_0to1 = loop_back == torch.arange(h0*w0, device=device)[None].repeat(N, 1)
     correct_0to1[:, 0] = False  # ignore the top-left corner
+    print("correct_0to1", correct_0to1)
+    print("____________________________")
 
     # 4. construct a gt conf_matrix
     conf_matrix_gt = torch.zeros(N, h0*w0, h1*w1, device=device)
