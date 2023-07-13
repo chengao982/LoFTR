@@ -95,9 +95,11 @@ def _make_evaluation_figure(data, b_id, alpha='dynamic'):
         alpha = dynamic_alpha(len(correct_mask))
     color = error_colormap(epi_errs, conf_thr, alpha=alpha)
     
+    img0_name = data["pair_names"][0].split('/')
+    img1_name = data["pair_names"][1].split('/')
     text = [
-        f'{data["pair_names"][0]}',
-        f'{data["pair_names"][1]}',
+        f'{'/'.join(img0_name[2], img0_name[4])}',
+        f'{'/'.join(img1_name[2], img1_name[4])}',
         f'#Matches {len(kpts0)}',
         f'Precision({conf_thr:.2e}) ({100 * precision:.1f}%): {n_correct}/{len(kpts0)}',
         f'Recall({conf_thr:.2e}) ({100 * recall:.1f}%): {n_correct}/{n_gt_matches}'
