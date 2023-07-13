@@ -95,9 +95,8 @@ def _make_evaluation_figure(data, b_id, alpha='dynamic'):
         alpha = dynamic_alpha(len(correct_mask))
     color = error_colormap(epi_errs, conf_thr, alpha=alpha)
     
-    print(data["pair_names"][0])
-    img0_name = data["pair_names"][0].split('/')
-    img1_name = data["pair_names"][1].split('/')
+    img0_name = data["pair_names"][0][0].split('/')
+    img1_name = data["pair_names"][1][0].split('/')
     text = [
         '/'.join([img0_name[2], img0_name[4]]),
         '/'.join([img1_name[2], img1_name[4]]),
