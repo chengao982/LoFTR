@@ -43,9 +43,9 @@ def spvs_coarse(data, config):
     scale0 = scale * data['scale0'][:, None] if 'scale0' in data else scale
     scale1 = scale * data['scale1'][:, None] if 'scale0' in data else scale
     h0, w0, h1, w1 = map(lambda x: x // scale, [H0, W0, H1, W1])
-    print(data['pair_names'])
-    print("h0, w0, h1, w1", h0, w0, h1, w1)
-    print("H0, W0, H1, W1", H0, W0, H1, W1)
+    # print(data['pair_names'])
+    # print("h0, w0, h1, w1", h0, w0, h1, w1)
+    # print("H0, W0, H1, W1", H0, W0, H1, W1)
 
     # 2. warp grids
     # create kpts in meshgrid and resize them to image resolution
@@ -54,8 +54,8 @@ def spvs_coarse(data, config):
     grid_pt1_c = create_meshgrid(h1, w1, False, device).reshape(1, h1*w1, 2).repeat(N, 1, 1)
     grid_pt1_i = scale1 * grid_pt1_c
 
-    print("data['T_0to1']", data['T_0to1'])
-    print("grid_pt0_c", grid_pt0_c)
+    # print("data['T_0to1']", data['T_0to1'])
+    # print("grid_pt0_c", grid_pt0_c)
 
     # mask padded region to (0, 0), so no need to manually mask conf_matrix_gt
     if 'mask0' in data:
@@ -73,9 +73,9 @@ def spvs_coarse(data, config):
     # 3. check if mutual nearest neighbor
     w_pt0_c_round = w_pt0_c[:, :, :].round().long()
 
-    print("w_pt0_c_round", w_pt0_c_round)
+    # print("w_pt0_c_round", w_pt0_c_round)
     nearest_index1 = w_pt0_c_round[..., 0] + w_pt0_c_round[..., 1] * w1
-    print("nearest_index1", nearest_index1)
+    # print("nearest_index1", nearest_index1)
     w_pt1_c_round = w_pt1_c[:, :, :].round().long()
     nearest_index0 = w_pt1_c_round[..., 0] + w_pt1_c_round[..., 1] * w0
 
@@ -86,11 +86,11 @@ def spvs_coarse(data, config):
     nearest_index0[out_bound_mask(w_pt1_c_round, w0, h0)] = 0
 
     loop_back = torch.stack([nearest_index0[_b][_i] for _b, _i in enumerate(nearest_index1)], dim=0)
-    print("loop_back", loop_back)
+    # print("loop_back", loop_back)
     correct_0to1 = loop_back == torch.arange(h0*w0, device=device)[None].repeat(N, 1)
     correct_0to1[:, 0] = False  # ignore the top-left corner
-    print("correct_0to1", correct_0to1)
-    print("____________________________")
+    # print("correct_0to1", correct_0to1)
+    # print("____________________________")
 
     # 4. construct a gt conf_matrix
     conf_matrix_gt = torch.zeros(N, h0*w0, h1*w1, device=device)
@@ -143,7 +143,7 @@ def compute_supervision_coarse(data, config):
     else:
         raise ValueError(f'Unknown data source: {data_source}')
     
-    return visualize_coarse_matches(data)
+    # return visualize_coarse_matches(data)
 
 ##############  ↓  Fine-Level supervision  ↓  ##############
 
@@ -180,45 +180,45 @@ def compute_supervision_fine(data, config):
 import matplotlib.pyplot as plt
 import matplotlib.lines as lines
 
-def visualize_coarse_matches(data):
-    conf_matrix_gt = data['conf_matrix_gt']
-    spv_w_pt0_i = data['spv_w_pt0_i']
-    spv_pt1_i = data['spv_pt1_i']
+# def visualize_coarse_matches(data):
+#     conf_matrix_gt = data['conf_matrix_gt']
+#     spv_w_pt0_i = data['spv_w_pt0_i']
+#     spv_pt1_i = data['spv_pt1_i']
 
-    img0 = data['image0'].squeeze().cpu()
-    img1 = data['image1'].squeeze().cpu()
-    mkpts0 = spv_w_pt0_i[data['spv_b_ids'], data['spv_i_ids']].cpu().numpy()
-    mkpts1 = spv_pt1_i[data['spv_b_ids'], data['spv_j_ids']].cpu().numpy()
+#     img0 = data['image0'].squeeze().cpu()
+#     img1 = data['image1'].squeeze().cpu()
+#     mkpts0 = spv_w_pt0_i[data['spv_b_ids'], data['spv_i_ids']].cpu().numpy()
+#     mkpts1 = spv_pt1_i[data['spv_b_ids'], data['spv_j_ids']].cpu().numpy()
 
-    fig, axes = plt.subplots(1, 2, figsize=(10, 6), dpi=75)
-    axes[0].imshow(img0, cmap='gray')
-    axes[1].imshow(img1, cmap='gray')
+#     fig, axes = plt.subplots(1, 2, figsize=(10, 6), dpi=75)
+#     axes[0].imshow(img0, cmap='gray')
+#     axes[1].imshow(img1, cmap='gray')
 
-    for i in range(2):   # clear all frames
-        axes[i].get_yaxis().set_ticks([])
-        axes[i].get_xaxis().set_ticks([])
-        for spine in axes[i].spines.values():
-            spine.set_visible(False)
+#     for i in range(2):   # clear all frames
+#         axes[i].get_yaxis().set_ticks([])
+#         axes[i].get_xaxis().set_ticks([])
+#         for spine in axes[i].spines.values():
+#             spine.set_visible(False)
 
-    color = 'r'  # Color for lines and scatter points
+#     color = 'r'  # Color for lines and scatter points
 
-    fig.canvas.draw()
-    transFigure = fig.transFigure.inverted()
-    fkpts0 = transFigure.transform(axes[0].transData.transform(mkpts0))
-    fkpts1 = transFigure.transform(axes[1].transData.transform(mkpts1))
+#     fig.canvas.draw()
+#     transFigure = fig.transFigure.inverted()
+#     fkpts0 = transFigure.transform(axes[0].transData.transform(mkpts0))
+#     fkpts1 = transFigure.transform(axes[1].transData.transform(mkpts1))
 
-    lines_list = [lines.Line2D((fkpts0[i, 0], fkpts1[i, 0]), (fkpts0[i, 1], fkpts1[i, 1]),
-                              transform=fig.transFigure, c=color, linewidth=1)
-                  for i in range(len(mkpts0))]
+#     lines_list = [lines.Line2D((fkpts0[i, 0], fkpts1[i, 0]), (fkpts0[i, 1], fkpts1[i, 1]),
+#                               transform=fig.transFigure, c=color, linewidth=1)
+#                   for i in range(len(mkpts0))]
     
-    for line in lines_list:
-        fig.lines.append(line)
+#     for line in lines_list:
+#         fig.lines.append(line)
 
-    axes[0].scatter(mkpts0[:, 0], mkpts0[:, 1], c=color, s=4)
-    axes[1].scatter(mkpts1[:, 0], mkpts1[:, 1], c=color, s=4)
+#     axes[0].scatter(mkpts0[:, 0], mkpts0[:, 1], c=color, s=4)
+#     axes[1].scatter(mkpts1[:, 0], mkpts1[:, 1], c=color, s=4)
 
-    # Save the figure to a tensor
-    fig.canvas.draw()
-    plt.close(fig)
+#     # Save the figure to a tensor
+#     fig.canvas.draw()
+#     plt.close(fig)
 
-    return fig
+#     return fig
