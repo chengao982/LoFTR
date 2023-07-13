@@ -7,7 +7,7 @@ PROJECT_DIR="${SCRIPTPATH}/../../"
 export PYTHONPATH=$PROJECT_DIR:$PYTHONPATH
 cd $PROJECT_DIR
 
-TRAIN_IMG_SIZE=360
+TRAIN_IMG_SIZE=480
 # to reproduced the results in our paper, please use:
 # TRAIN_IMG_SIZE=840
 data_cfg_path="configs/data/crop_trainval_${TRAIN_IMG_SIZE}.py"
