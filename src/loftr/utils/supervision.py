@@ -54,6 +54,9 @@ def spvs_coarse(data, config):
     grid_pt1_c = create_meshgrid(h1, w1, False, device).reshape(1, h1*w1, 2).repeat(N, 1, 1)
     grid_pt1_i = scale1 * grid_pt1_c
 
+    print("data['T_0to1']", data['T_0to1'])
+    print("grid_pt0_c", grid_pt0_c)
+
     # mask padded region to (0, 0), so no need to manually mask conf_matrix_gt
     if 'mask0' in data:
         grid_pt0_i = mask_pts_at_padded_regions(grid_pt0_i, data['mask0'])
