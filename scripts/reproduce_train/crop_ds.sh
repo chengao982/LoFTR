@@ -32,5 +32,6 @@ python -u ./train.py \
     --limit_val_batches=1. \
     --num_sanity_val_steps=10 \
     --benchmark=True \
-    --max_epochs=50 \
+    --max_epochs=30 \
+    --ckpt_path="weights/last_seperated.ckpt"
 #    --ckpt_path="weights/outdoor_ds.ckpt"
