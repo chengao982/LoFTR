@@ -47,7 +47,7 @@ def spvs_coarse(data, config):
     # print("h0, w0, h1, w1", h0, w0, h1, w1)
     # print("H0, W0, H1, W1", H0, W0, H1, W1)
     compensate_height_diff = config['TRAINER']['COMPENSATE_HEIGHT_DIFF']
-    print("compensate_height_diff: " + compensate_height_diff)
+    print("compensate_height_diff: " + str(compensate_height_diff))
 
     # 2. warp grids
     # create kpts in meshgrid and resize them to image resolution
