@@ -134,8 +134,8 @@ class CropDataset(Dataset):
             data.update({
                 'height_map0': height_map0,
                 'height_map1': height_map1,
-                'T0': T0,
-                'T1': T1,
+                'T0': torch.tensor(T0, dtype=torch.float),
+                'T1': torch.tensor(T1, dtype=torch.float),
             })
 
         return data
