@@ -129,14 +129,10 @@ class CropDataset(Dataset):
             'pair_id': idx,
             'pair_names': (self.scene_info['image_paths'][idx0], self.scene_info['image_paths'][idx1]),
             'compensate_height_diff': compensate_height_diff,
-        }
-
-        if compensate_height_diff:
-            data.update({
-                'height_map0': height_map0,
-                'height_map1': height_map1,
-                'T0': torch.tensor(T0, dtype=torch.float),
-                'T1': torch.tensor(T1, dtype=torch.float),
-            })
+            'height_map0': height_map0,
+            'height_map1': height_map1,
+            'T0': torch.tensor(T0, dtype=torch.float),
+            'T1': torch.tensor(T1, dtype=torch.float),
+            }
 
         return data
