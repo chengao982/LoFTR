@@ -79,7 +79,7 @@ class CropDataset(Dataset):
         print('height_map_name0:' + height_map_name0)
         print('img_name1: ' + img_name1)
         print('height_map_name1:' + height_map_name1)
-        print('compensate_height_diff: ' + compensate_height_diff)
+        print('compensate_height_diff: ' + str(compensate_height_diff))
         
         # TODO: Support augmentation & handle seeds for each worker correctly.
         image0, scale0 = read_crop_gray(
