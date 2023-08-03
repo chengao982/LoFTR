@@ -224,3 +224,11 @@ def read_crop_depth(path):
     depth = torch.from_numpy(depth).float()  # (h, w)
     # print('depth.shape', depth.shape)
     return depth
+
+
+def read_crop_height_map(path, height_map_name):
+    height_map = np.array(h5py.File(path, 'r')[height_map_name]).squeeze()
+
+    height_map = torch.from_numpy(height_map).float()  # (h, w)
+    print('height_map.shape', height_map.shape)
+    return height_map

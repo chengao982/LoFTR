@@ -22,3 +22,7 @@ cfg.TRAINER.N_SAMPLES_PER_SUBSET = 500
 cfg.DATASET.MGDPT_IMG_RESIZE = 360  # for training on 32GB meme GPUs
 cfg.DATASET.MGDPT_IMG_PAD = False  # pad img to square with size = MGDPT_IMG_RESIZE
 cfg.DATASET.MGDPT_DEPTH_PAD = False  # pad depthmap to square with size = 2000
+
+
+# compensate for height difference 
+cfg.TRAINER.COMPENSATE_HEIGHT_DIFF = True

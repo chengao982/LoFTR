@@ -72,6 +72,8 @@ class MultiSceneDataModule(pl.LightningDataModule):
         self.mgdpt_df = config.DATASET.MGDPT_DF  # 8
         self.coarse_scale = 1 / config.LOFTR.RESOLUTION[0]  # 0.125. for training loftr.
 
+        self.compensate_height_diff = config.TRAINER.COMPENSATE_HEIGHT_DIFF
+
         # 3.loader parameters
         self.train_loader_params = {
             'batch_size': args.batch_size,
@@ -242,7 +244,8 @@ class MultiSceneDataModule(pl.LightningDataModule):
                                 img_padding=self.mgdpt_img_pad,
                                 depth_padding=self.mgdpt_depth_pad,
                                 augment_fn=augment_fn,
-                                coarse_scale=self.coarse_scale))
+                                coarse_scale=self.coarse_scale,
+                                compensate_height_diff=self.compensate_height_diff))
             else:
                 raise NotImplementedError()
         return ConcatDataset(datasets)

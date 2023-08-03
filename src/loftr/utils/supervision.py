@@ -5,7 +5,7 @@ import torch
 from einops import repeat
 from kornia.utils import create_meshgrid
 
-from .geometry import warp_kpts
+from .geometry import warp_kpts, warp_kpts_chd
 
 ##############  ↓  Coarse-Level supervision  ↓  ##############
 
@@ -46,6 +46,8 @@ def spvs_coarse(data, config):
     # print(data['pair_names'])
     # print("h0, w0, h1, w1", h0, w0, h1, w1)
     # print("H0, W0, H1, W1", H0, W0, H1, W1)
+    compensate_height_diff = config['TRAINER']['COMPENSATE_HEIGHT_DIFF']
+    print("compensate_height_diff: " + compensate_height_diff)
 
     # 2. warp grids
     # create kpts in meshgrid and resize them to image resolution
@@ -65,8 +67,12 @@ def spvs_coarse(data, config):
     # warp kpts bi-directionally and resize them to coarse-level resolution
     # (no depth consistency check, since it leads to worse results experimentally)
     # (unhandled edge case: points with 0-depth will be warped to the left-up corner)
-    _, w_pt0_i = warp_kpts(grid_pt0_i, data['depth0'], data['depth1'], data['T_0to1'], data['K0'], data['K1'])
-    _, w_pt1_i = warp_kpts(grid_pt1_i, data['depth1'], data['depth0'], data['T_1to0'], data['K1'], data['K0'])
+    if not compensate_height_diff:
+        _, w_pt0_i = warp_kpts(grid_pt0_i, data['depth0'], data['depth1'], data['T_0to1'], data['K0'], data['K1'])
+        _, w_pt1_i = warp_kpts(grid_pt1_i, data['depth1'], data['depth0'], data['T_1to0'], data['K1'], data['K0'])
+    else:
+        _, w_pt0_i = warp_kpts_chd(grid_pt0_i, data['depth0'], data['depth1'], data['height_map0'], data['T0'], data['T1'], data['K0'], data['K1'])
+        _, w_pt1_i = warp_kpts_chd(grid_pt1_i, data['depth1'], data['depth0'], data['height_map1'], data['T1'], data['T0'], data['K1'], data['K0'])
     w_pt0_c = w_pt0_i / scale1
     w_pt1_c = w_pt1_i / scale0
 

@@ -163,6 +163,9 @@ _CN.TRAINER.GRADIENT_CLIPPING = 0.5
 # are used during training on ScanNet. (60M pairs of images sampled during traing from 230M pairs in total.)
 _CN.TRAINER.SEED = 66
 
+# compensate for height difference 
+_CN.TRAINER.COMPENSATE_HEIGHT_DIFF = False
+
 
 def get_cfg_defaults():
     """Get a yacs CfgNode object with default values for my_project."""
