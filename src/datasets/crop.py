@@ -74,12 +74,6 @@ class CropDataset(Dataset):
         # read grayscale image and mask. (1, h, w) and (h, w)
         img_name0 = osp.join(self.root_dir, self.scene_info['image_paths'][idx0])
         img_name1 = osp.join(self.root_dir, self.scene_info['image_paths'][idx1])
-
-        print('img_name0: ' + img_name0)
-        print('height_map_name0:' + height_map_name0)
-        print('img_name1: ' + img_name1)
-        print('height_map_name1:' + height_map_name1)
-        print('compensate_height_diff: ' + str(compensate_height_diff))
         
         # TODO: Support augmentation & handle seeds for each worker correctly.
         image0, scale0 = read_crop_gray(
