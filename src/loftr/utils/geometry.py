@@ -114,12 +114,12 @@ def warp_kpts_chd(kpts0, depth0, depth1, height_map0, T0, T1, K0, K1):
     kpts0_cam = K0.inverse() @ kpts0_h.transpose(2, 1)  # (N, 3, L)
 
     # To Ground, replace z with the height map
-    w_kpts0_cam = T0[:, :3, :3] @ kpts0_cam + T0[:, :3, [3]]    # (N, 3, L)
-    w_kpts0_cam[:, 2, :] = kpts0_height_map
+    w_kpts0_ground = T0[:, :3, :3] @ kpts0_cam + T0[:, :3, [3]]    # (N, 3, L)
+    w_kpts0_ground[:, 2, :] = kpts0_height_map
 
     # To Cam1
     T1_inv = T1.inverse()
-    w_kpts0_cam = T1_inv[:, :3, :3] @ kpts0_cam + T1_inv[:, :3, [3]]    # (N, 3, L)
+    w_kpts0_cam = T1_inv[:, :3, :3] @ w_kpts0_ground + T1_inv[:, :3, [3]]    # (N, 3, L)
     w_kpts0_depth_computed = w_kpts0_cam[:, 2, :]
 
     # Project
