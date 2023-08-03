@@ -115,8 +115,8 @@ def warp_kpts_chd(kpts0, depth0, depth1, height_map0, T0, T1, K0, K1):
 
     # To Ground, replace z with the height map
     w_kpts0_cam = T0[:, :3, :3] @ kpts0_cam + T0[:, :3, [3]]    # (N, 3, L)
-    w_kpts0_cam[:, 2, :] = kpts0_height_map[:, None, :]
     print(kpts0_height_map[:, None, :].shape)
+    w_kpts0_cam[:, 2, :] = kpts0_height_map[:, None, :]
 
     # To Cam1
     T1_inv = T1.inverse()
