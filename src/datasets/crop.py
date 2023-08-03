@@ -90,12 +90,11 @@ class CropDataset(Dataset):
             depth1 = read_crop_depth(
                 osp.join(self.root_dir, self.scene_info['depth_paths'][idx1]))
             
-            if compensate_height_diff:
-                height_map_name0, height_map_name1 = pair_height_map_name
-                height_map0 = read_crop_height_map(
-                    osp.join(self.root_dir, self.scene_info['height_map_paths'][idx0]), height_map_name0)
-                height_map1 = read_crop_height_map(
-                    osp.join(self.root_dir, self.scene_info['height_map_paths'][idx1]), height_map_name1)
+            height_map_name0, height_map_name1 = pair_height_map_name
+            height_map0 = read_crop_height_map(
+                osp.join(self.root_dir, self.scene_info['height_map_paths'][idx0]), height_map_name0)
+            height_map1 = read_crop_height_map(
+                osp.join(self.root_dir, self.scene_info['height_map_paths'][idx1]), height_map_name1)
             
         else:
             depth0 = depth1 = torch.tensor([])
