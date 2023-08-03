@@ -128,6 +128,7 @@ class CropDataset(Dataset):
             'scene_id': self.scene_id,
             'pair_id': idx,
             'pair_names': (self.scene_info['image_paths'][idx0], self.scene_info['image_paths'][idx1]),
+            'compensate_height_diff': compensate_height_diff,
         }
 
         if compensate_height_diff:
