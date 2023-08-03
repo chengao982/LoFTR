@@ -68,7 +68,6 @@ class CropDataset(Dataset):
         (idx0, idx1), overlap_score, pair_height_map_name = self.pair_infos[idx]
         height_map_name0, height_map_name1 = pair_height_map_name
         compensate_height_diff = self.compensate_height_diff
-        print(type(self.compensate_height_diff))
         if height_map_name0 == height_map_name1:
             compensate_height_diff = False
 
