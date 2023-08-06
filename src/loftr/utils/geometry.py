@@ -108,6 +108,7 @@ def warp_kpts_chd(kpts0, depth0, depth1, height_map0, T0, T1, K0, K1):
     kpts0_height_map = torch.stack(
         [height_map0[i, kpts0_long[i, :, 1], kpts0_long[i, :, 0]] for i in range(kpts0.shape[0])], dim=0
     )  # (N, L)
+    height_nonzero_mask = kpts0_height_map != 0  # values in the height map will be zero if not valid
 
     # Unproject
     kpts0_h = torch.cat([kpts0, torch.ones_like(kpts0[:, :, [0]])], dim=-1) * kpts0_depth[..., None]  # (N, L, 3)
@@ -126,6 +127,8 @@ def warp_kpts_chd(kpts0, depth0, depth1, height_map0, T0, T1, K0, K1):
     w_kpts0_h = (K1 @ w_kpts0_cam).transpose(2, 1)  # (N, L, 3)
     w_kpts0 = w_kpts0_h[:, :, :2] / (w_kpts0_h[:, :, [2]] + 1e-4)  # (N, L, 2), +1e-4 to avoid zero depth
 
+    w_kpts0[~height_nonzero_mask] = 0  # if height is invalid, warp the point to the left-up corner
+
     # print("w_kpts0", w_kpts0)
     # print("-----------------------------")
 
@@ -140,7 +143,9 @@ def warp_kpts_chd(kpts0, depth0, depth1, height_map0, T0, T1, K0, K1):
         [depth1[i, w_kpts0_long[i, :, 1], w_kpts0_long[i, :, 0]] for i in range(w_kpts0_long.shape[0])], dim=0
     )  # (N, L)
     consistent_mask = ((w_kpts0_depth - w_kpts0_depth_computed) / w_kpts0_depth).abs() < 0.2
-    valid_mask = nonzero_mask * covisible_mask * consistent_mask
+    # valid_mask = nonzero_mask * covisible_mask * consistent_mask
+
+    valid_mask = height_nonzero_mask * covisible_mask * consistent_mask
 
     # print("nonzero_mask", torch.sum(nonzero_mask), nonzero_mask.shape)
     # print("covisible_mask", torch.sum(covisible_mask), covisible_mask.shape)
