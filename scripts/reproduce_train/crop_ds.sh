@@ -32,7 +32,7 @@ python -u ./train.py \
     --limit_val_batches=1. \
     --num_sanity_val_steps=10 \
     --benchmark=True \
-    --max_epochs=60 \
-    --ckpt_path="weights/outdoor_ds.ckpt"
+    --max_epochs=52 \
+    # --ckpt_path="weights/outdoor_ds.ckpt"
 
-    # --ckpt_path="weights/last_seperated.ckpt"
+    --ckpt_path="logs/tb_logs/crop-ds-360-bs=4/version_2/checkpoints/last.ckpt
