@@ -19,6 +19,7 @@ class CropDataset(Dataset):
                  img_padding=False,
                  depth_padding=False,
                  augment_fn=None,
+                 img_crop=None,
                  compensate_height_diff=False,
                  **kwargs):
         """
@@ -55,6 +56,7 @@ class CropDataset(Dataset):
             assert img_resize is not None # and img_padding and depth_padding
         self.img_resize = img_resize
         self.df = df
+        self.img_crop = img_crop
 
         # for training LoFTR
         self.augment_fn = augment_fn if mode == 'train' else None
@@ -77,27 +79,29 @@ class CropDataset(Dataset):
         
         # TODO: Support augmentation & handle seeds for each worker correctly.
         image0, scale0 = read_crop_gray(
-            img_name0, self.img_resize, self.df, None)
+            img_name0, self.img_resize, self.df, None, self.img_crop)
             # np.random.choice([self.augment_fn, None], p=[0.5, 0.5]))
         image1, scale1 = read_crop_gray(
-            img_name1, self.img_resize, self.df, None)
+            img_name1, self.img_resize, self.df, None, self.img_crop)
             # np.random.choice([self.augment_fn, None], p=[0.5, 0.5]))
 
         # read depth. shape: (h, w)
         if self.mode in ['train', 'val']:
-            depth0 = read_crop_depth(
-                osp.join(self.root_dir, self.scene_info['depth_paths'][idx0]))
-            depth1 = read_crop_depth(
-                osp.join(self.root_dir, self.scene_info['depth_paths'][idx1]))
+            depth0 = read_crop_depth(osp.join(self.root_dir, self.scene_info['depth_paths'][idx0]), 
+                                     self.img_crop)
+            depth1 = read_crop_depth(osp.join(self.root_dir, self.scene_info['depth_paths'][idx1]), 
+                                     self.img_crop)
             
-            height_map_name0, height_map_name1 = pair_height_map_name
-            height_map0 = read_crop_height_map(
-                osp.join(self.root_dir, self.scene_info['height_map_paths'][idx0]), height_map_name0)
-            height_map1 = read_crop_height_map(
-                osp.join(self.root_dir, self.scene_info['height_map_paths'][idx1]), height_map_name1)
+            if self.compensate_height_diff:
+                height_map_name0, height_map_name1 = pair_height_map_name
+                height_map0 = read_crop_height_map(
+                    osp.join(self.root_dir, self.scene_info['height_map_paths'][idx0]), height_map_name0)
+                height_map1 = read_crop_height_map(
+                    osp.join(self.root_dir, self.scene_info['height_map_paths'][idx1]), height_map_name1)
             
         else:
             depth0 = depth1 = torch.tensor([])
+            height_map0 = height_map1 = torch.tensor([])
 
         # read intrinsics of original size
         # K_0 = torch.tensor(self.scene_info['intrinsics'][idx0].copy(), dtype=torch.float).reshape(3, 3)
@@ -127,11 +131,15 @@ class CropDataset(Dataset):
             'scene_id': self.scene_id,
             'pair_id': idx,
             'pair_names': (self.scene_info['image_paths'][idx0], self.scene_info['image_paths'][idx1]),
-            'compensate_height_diff': compensate_height_diff,
-            'height_map0': height_map0,
-            'height_map1': height_map1,
-            'T0': torch.tensor(T0, dtype=torch.float),
-            'T1': torch.tensor(T1, dtype=torch.float),
             }
+        
+        if self.compensate_height_diff:
+            data.update({
+                'compensate_height_diff': compensate_height_diff,
+                'height_map0': height_map0,
+                'height_map1': height_map1,
+                'T0': torch.tensor(T0, dtype=torch.float),
+                'T1': torch.tensor(T1, dtype=torch.float),
+            })
 
         return data

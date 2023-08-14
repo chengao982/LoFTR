@@ -68,6 +68,20 @@ def get_divisible_wh(w, h, df=None):
         w_new, h_new = w, h
     return w_new, h_new
 
+def get_cropped_image(image, w_cropped):
+    w, h = image.shape[1], image.shape[0]
+    scale = w_cropped / w
+    w_new = w_cropped
+    h_new = int(scale * h)
+    w_start = int((w - w_new) / 2)
+    w_end = w_start + w_new
+    h_start = int((h - h_new) / 2)
+    h_end = h_start + h_new
+
+    image_new = image_new[h_start:h_end, w_start:w_end]
+
+    return image_new
+
 
 def pad_bottom_right(inp, pad_size, ret_mask=False):
     assert isinstance(pad_size, int) and pad_size >= max(inp.shape[-2:]), f"{pad_size} < {max(inp.shape[-2:])}"
@@ -187,12 +201,13 @@ def read_scannet_intrinsic(path):
 
 # --- CROP ---
 
-def read_crop_gray(path, resize=None, df=None, augment_fn=None):
+def read_crop_gray(path, resize=None, df=None, augment_fn=None, crop=None):
     """
     Args:
         resize (int, optional): the longer edge of resized images. None for no resize.
         padding (bool): If set to 'True', zero-pad resized images to squared size.
-        augment_fn (callable, optional): augments images with pre-defined visual effects
+        augment_fn (callable, optional): augments images with pre-defined visual effects.
+        crop (optional): the longer edge of the cropped images. Crop the image after read, before resize.
     Returns:
         image (torch.tensor): (1, h, w)
         mask (torch.tensor): (h, w)
@@ -201,6 +216,13 @@ def read_crop_gray(path, resize=None, df=None, augment_fn=None):
     # read image
     image = imread_gray(path, augment_fn, client=MEGADEPTH_CLIENT)
     w, h = image.shape[1], image.shape[0]
+    print('ori image', image.shape)
+
+    # crop image
+    if crop:
+        image = get_cropped_image(image, crop)
+        w, h = image.shape[1], image.shape[0]
+        print('after crop', image.shape)
 
     # resize image
     w_new, h_new = get_resized_wh(w, h, resize)
@@ -215,11 +237,16 @@ def read_crop_gray(path, resize=None, df=None, augment_fn=None):
     return image, scale
 
 
-def read_crop_depth(path):
+def read_crop_depth(path, crop=None):
     if str(path).startswith('s3://'):
         depth = load_array_from_s3(path, MEGADEPTH_CLIENT, None, use_h5py=True)
     else:
         depth = np.array(h5py.File(path, 'r')['depth_data']).squeeze()
+
+    # crop image
+    if crop:
+        depth = get_cropped_image(depth, crop)
+        print('depth after crop', depth.shape)
 
     depth = torch.from_numpy(depth).float()  # (h, w)
     # print('depth.shape', depth.shape)

@@ -72,6 +72,7 @@ class MultiSceneDataModule(pl.LightningDataModule):
         self.mgdpt_df = config.DATASET.MGDPT_DF  # 8
         self.coarse_scale = 1 / config.LOFTR.RESOLUTION[0]  # 0.125. for training loftr.
 
+        self.crop_img_crop = config.DATASET.CROP_IMG_CROP  # 2160
         self.compensate_height_diff = config.TRAINER.COMPENSATE_HEIGHT_DIFF
 
         # 3.loader parameters
@@ -244,6 +245,7 @@ class MultiSceneDataModule(pl.LightningDataModule):
                                 img_padding=self.mgdpt_img_pad,
                                 depth_padding=self.mgdpt_depth_pad,
                                 augment_fn=augment_fn,
+                                img_crop=self.crop_img_crop,
                                 coarse_scale=self.coarse_scale,
                                 compensate_height_diff=self.compensate_height_diff))
             else:
