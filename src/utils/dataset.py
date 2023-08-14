@@ -78,9 +78,7 @@ def get_cropped_image(image, w_cropped):
     h_start = int((h - h_new) / 2)
     h_end = h_start + h_new
 
-    image_new = image[h_start:h_end, w_start:w_end]
-
-    return image_new
+    return image[h_start:h_end, w_start:w_end]
 
 
 def pad_bottom_right(inp, pad_size, ret_mask=False):
