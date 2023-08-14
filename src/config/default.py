@@ -99,7 +99,7 @@ _CN.DATASET.MGDPT_DEPTH_PAD = True  # pad depthmap to square with size = 2000
 _CN.DATASET.MGDPT_DF = 8
 
 # Crop-only options
-_CN.DATASET.CROP_IMG_CROP = False  # crop before resize
+_CN.DATASET.CROP_IMG_CROP = 0  # crop before resize
 
 ##############  Trainer  ##############
 _CN.TRAINER = CN()
