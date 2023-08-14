@@ -216,13 +216,13 @@ def read_crop_gray(path, resize=None, df=None, augment_fn=None, crop=None):
     # read image
     image = imread_gray(path, augment_fn, client=MEGADEPTH_CLIENT)
     w, h = image.shape[1], image.shape[0]
-    print('ori image', image.shape)
+    # print('ori image', image.shape)
 
     # crop image
     if crop:
         image = get_cropped_image(image, crop)
         w, h = image.shape[1], image.shape[0]
-        print('after crop', image.shape)
+        # print('after crop', image.shape)
 
     # resize image
     w_new, h_new = get_resized_wh(w, h, resize)
@@ -246,7 +246,7 @@ def read_crop_depth(path, crop=None):
     # crop image
     if crop:
         depth = get_cropped_image(depth, crop)
-        print('depth after crop', depth.shape)
+        # print('depth after crop', depth.shape)
 
     depth = torch.from_numpy(depth).float()  # (h, w)
     # print('depth.shape', depth.shape)
