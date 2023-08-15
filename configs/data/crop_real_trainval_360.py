@@ -24,7 +24,7 @@ cfg.DATASET.MGDPT_IMG_PAD = False  # pad img to square with size = MGDPT_IMG_RES
 cfg.DATASET.MGDPT_DEPTH_PAD = False  # pad depthmap to square with size = 2000
 
 # trian real crop images. For synthetic dataset, set to False
-cfg.DATASET.CROP_IMG_CROP = 2160  # crop before resize, longer edge=2160
+cfg.DATASET.CROP_IMG_CROP = 3000  # crop before resize, longer edge=2160
 
 
 cfg.TRAINER.EPI_ERR_THR = 1e-4
