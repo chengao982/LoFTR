@@ -98,8 +98,8 @@ def _make_evaluation_figure(data, b_id, alpha='dynamic'):
     img0_name = data["pair_names"][0][0].split('/')
     img1_name = data["pair_names"][1][0].split('/')
     text = [
-        '/'.join([img0_name[-3][-10:-2], img0_name[-1]]),
-        '/'.join([img1_name[-3][-10:-2], img1_name[-1]]),
+        '/'.join([img0_name[-4][-10:-2], img0_name[-1]]),
+        '/'.join([img1_name[-4][-10:-2], img1_name[-1]]),
         f'#Matches {len(kpts0)}',
         f'Precision({conf_thr:.2e}) ({100 * precision:.1f}%): {n_correct}/{len(kpts0)}',
         f'Recall({conf_thr:.2e}) ({100 * recall:.1f}%): {n_correct}/{n_gt_matches}'
