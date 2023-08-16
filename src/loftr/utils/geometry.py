@@ -89,11 +89,13 @@ def warp_kpts_chd(kpts0, depth0, depth1, height_map0, height_map_info0, T0, T1, 
         calculable_mask (torch.Tensor): [N, L]
         warped_keypoints0 (torch.Tensor): [N, L, 2] <x0_hat, y1_hat>
     """
-    print('height_map_info0', height_map_info0.shape)
-    print('depth0', depth0.shape)
-    cell_size = height_map_info0[:,0].reshape(-1,1)
-    x_min = height_map_info0[:,1].reshape(-1,1)
-    y_min = height_map_info0[:,2].reshape(-1,1)
+
+    cell_size = height_map_info0[:,0].reshape(-1,1,1)
+    x_min = height_map_info0[:,1].reshape(-1,1,1)
+    y_min = height_map_info0[:,2].reshape(-1,1,1)
+    xy_min = torch.cat([x_min, y_min], dim=-1)
+    print('xy_min', xy_min.shape)
+    print(xy_min)
 
     kpts0_long = kpts0.round().long()
 
@@ -116,13 +118,10 @@ def warp_kpts_chd(kpts0, depth0, depth1, height_map0, height_map_info0, T0, T1, 
 
     # Get x, y coordinates
     w_kpts0_ground_xy = w_kpts0_ground[:, :2, :].transpose(1, 2)    # (N, L, 2)
-    print('w_kpts0_ground_xy', w_kpts0_ground_xy.shape)
-    print('xy', x_min.shape)
-    print('cell', cell_size.unsqueeze(1))
     
     # Move indices to the range of the height map
     kpts0_height_map_indices = (
-        (w_kpts0_ground_xy - torch.cat([x_min, y_min], dim=-1).unsqueeze(1)) / cell_size.unsqueeze(1)
+        (w_kpts0_ground_xy - xy_min) / cell_size
     ).to(torch.int64)
     
     # Clip indices to stay within valid range
