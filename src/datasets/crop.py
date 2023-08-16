@@ -63,6 +63,9 @@ class CropDataset(Dataset):
         self.coarse_scale = getattr(kwargs, 'coarse_scale', 0.125)
         self.compensate_height_diff = compensate_height_diff
 
+        # load height maps for later use
+        self.height_maps = read_crop_height_map(self.scene_info['height_map_paths'].item(), pad_size=3000)
+
     def __len__(self):
         return len(self.pair_infos)
 
@@ -94,14 +97,17 @@ class CropDataset(Dataset):
             
             if self.compensate_height_diff:
                 height_map_name0, height_map_name1 = pair_height_map_name
-                height_map0 = read_crop_height_map(
-                    osp.join(self.root_dir, self.scene_info['height_map_paths'][idx0]), height_map_name0)
-                height_map1 = read_crop_height_map(
-                    osp.join(self.root_dir, self.scene_info['height_map_paths'][idx1]), height_map_name1)
+                height_map0, height_map_info0 = self.height_maps[height_map_name0]
+                height_map1, height_map_info1 = self.height_maps[height_map_name1]
+                # height_map0 = read_crop_height_map(
+                #     osp.join(self.root_dir, self.scene_info['height_map_paths'][idx0]), height_map_name0)
+                # height_map1 = read_crop_height_map(
+                #     osp.join(self.root_dir, self.scene_info['height_map_paths'][idx1]), height_map_name1)
             
         else:
             depth0 = depth1 = torch.tensor([])
-            height_map0 = height_map1 = torch.tensor([])
+            if self.compensate_height_diff:
+                height_map0 = height_map1 = torch.tensor([])
 
         # read intrinsics of original size
         # K_0 = torch.tensor(self.scene_info['intrinsics'][idx0].copy(), dtype=torch.float).reshape(3, 3)
@@ -136,10 +142,12 @@ class CropDataset(Dataset):
         if self.compensate_height_diff:
             data.update({
                 'compensate_height_diff': compensate_height_diff,
-                'height_map0': height_map0,
-                'height_map1': height_map1,
                 'T0': torch.tensor(T0, dtype=torch.float),
                 'T1': torch.tensor(T1, dtype=torch.float),
+                'height_map0': height_map0,
+                'height_map1': height_map1,
+                'height_map_info0': height_map_info0,
+                'height_map_info1': height_map_info1,
             })
 
         return data

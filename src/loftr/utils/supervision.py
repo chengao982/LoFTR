@@ -73,8 +73,11 @@ def spvs_coarse(data, config):
         _, w_pt0_i = warp_kpts(grid_pt0_i, data['depth0'], data['depth1'], data['T_0to1'], data['K0'], data['K1'])
         _, w_pt1_i = warp_kpts(grid_pt1_i, data['depth1'], data['depth0'], data['T_1to0'], data['K1'], data['K0'])
     else:
-        _, w_pt0_i = warp_kpts_chd(grid_pt0_i, data['depth0'], data['depth1'], data['height_map0'], data['T0'], data['T1'], data['K0'], data['K1'])
-        _, w_pt1_i = warp_kpts_chd(grid_pt1_i, data['depth1'], data['depth0'], data['height_map1'], data['T1'], data['T0'], data['K1'], data['K0'])
+        _, w_pt0_i = warp_kpts_chd(grid_pt0_i, data['depth0'], data['depth1'], data['height_map0'], data['height_map_info0'], data['T0'], data['T1'], data['K0'], data['K1'])
+        _, w_pt1_i = warp_kpts_chd(grid_pt1_i, data['depth1'], data['depth0'], data['height_map1'], data['height_map_info1'], data['T1'], data['T0'], data['K1'], data['K0'])
+        # _, w_pt0_i = warp_kpts_chd(grid_pt0_i, data['depth0'], data['depth1'], data['height_map0'], data['T0'], data['T1'], data['K0'], data['K1'])
+        # _, w_pt1_i = warp_kpts_chd(grid_pt1_i, data['depth1'], data['depth0'], data['height_map1'], data['T1'], data['T0'], data['K1'], data['K0'])
+
     w_pt0_c = w_pt0_i / scale1
     w_pt1_c = w_pt1_i / scale0
 

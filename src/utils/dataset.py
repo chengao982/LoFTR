@@ -100,6 +100,21 @@ def pad_bottom_right(inp, pad_size, ret_mask=False):
         raise NotImplementedError()
     return padded, mask
 
+def pad_bottom_right_cut(inp, pad_size):
+    assert isinstance(pad_size, int) and inp.ndim == 2, "height map should has and only has 2 dims"
+    shape_0_end = min(inp.shape[0], pad_size)
+    shape_1_end = min(inp.shape[1], pad_size)
+    padded = np.zeros((pad_size, pad_size), dtype=inp.dtype)
+    padded[:shape_0_end, :shape_1_end] = inp[:shape_0_end, :shape_1_end]
+    return padded
+
+def set_boarder_to_zero(inp):
+    inp[0, :] = 0
+    inp[-1, :] = 0
+    inp[:, 0] = 0
+    inp[:, -1] = 0
+    return inp
+
 
 # --- MEGADEPTH ---
 
@@ -251,9 +266,39 @@ def read_crop_depth(path, crop=None):
     return depth
 
 
-def read_crop_height_map(path, height_map_name):
-    height_map = np.array(h5py.File(path, 'r')[height_map_name]).squeeze()
+# def read_crop_height_map(path, height_map_name):
+    # """
+    # For pesudo height map of sythetic images       
+    # """
+#     height_map = np.array(h5py.File(path, 'r')[height_map_name]).squeeze()
 
-    height_map = torch.from_numpy(height_map).float()  # (h, w)
-    # print('height_map.shape', height_map.shape)
-    return height_map
+#     height_map = torch.from_numpy(height_map).float()  # (h, w)
+#     # print('height_map.shape', height_map.shape)
+#     return height_map
+
+def read_crop_height_map(height_map_paths, pad_size=3000):
+    """
+    For real images
+    height map of the real field
+    pad or cut size to (3000, 3000)
+    """
+    height_maps = {}
+    for date, path in height_map_paths.items():
+        height_map_dict = dict(np.load(path, allow_pickle=True))
+        height_map_info = torch.tensor([height_map_dict['cell_size'],
+                                        height_map_dict['x_min'],
+                                        height_map_dict['y_min'],
+                                        height_map_dict['x_max'],
+                                        height_map_dict['y_max']
+        ])
+
+        height_map = height_map_dict['height_map']
+        height_map = pad_bottom_right_cut(height_map, pad_size)
+        height_map = set_boarder_to_zero(height_map)
+
+        height_map = torch.from_numpy(height_map).float()  # (3000, 3000)
+        # print('height_map.shape', height_map.shape)
+
+        height_maps[date] = (height_map, height_map_info)
+
+    return height_maps
