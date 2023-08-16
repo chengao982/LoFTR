@@ -30,4 +30,4 @@ cfg.DATASET.CROP_IMG_CROP = 3000  # crop before resize, longer edge=3000
 cfg.TRAINER.EPI_ERR_THR = 1e-4
 
 # compensate for height difference 
-cfg.TRAINER.COMPENSATE_HEIGHT_DIFF = True
+cfg.TRAINER.COMPENSATE_HEIGHT_DIFF = False
