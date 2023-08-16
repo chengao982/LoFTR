@@ -285,12 +285,13 @@ def read_crop_height_map(height_map_paths, pad_size=3000):
     height_maps = {}
     for date, path in height_map_paths.items():
         height_map_dict = dict(np.load(path, allow_pickle=True))
-        height_map_info = torch.tensor([height_map_dict['cell_size'],
-                                        height_map_dict['x_min'],
-                                        height_map_dict['y_min'],
-                                        height_map_dict['x_max'],
-                                        height_map_dict['y_max']
+        height_map_info = np.array([height_map_dict['cell_size'],
+                                    height_map_dict['x_min'],
+                                    height_map_dict['y_min'],
+                                    height_map_dict['x_max'],
+                                    height_map_dict['y_max']
         ])
+        height_map_info = torch.from_numpy(height_map_info)
 
         height_map = height_map_dict['height_map']
         height_map = pad_bottom_right_cut(height_map, pad_size)
