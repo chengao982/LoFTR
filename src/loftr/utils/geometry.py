@@ -68,7 +68,7 @@ def warp_kpts(kpts0, depth0, depth1, T_0to1, K0, K1):
 
     return valid_mask, w_kpts0
 
- @torch.no_grad()
+@torch.no_grad()
 def warp_kpts_chd(kpts0, depth0, depth1, height_map0, height_map_info0, T0, T1, K0, K1):
     """ Warp kpts0 from I0 to I1 with depth, K and Rt
     Compensate for Height Difference using pesudo "height maps" of sythetic images.
