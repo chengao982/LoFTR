@@ -64,7 +64,8 @@ class CropDataset(Dataset):
         self.compensate_height_diff = compensate_height_diff
 
         # load height maps for later use
-        self.height_maps = read_crop_height_map(self.scene_info['height_map_paths'].item(), pad_size=3000)
+        if self.compensate_height_diff:
+            self.height_maps = read_crop_height_map(self.scene_info['height_map_paths'].item(), pad_size=3000)
 
     def __len__(self):
         return len(self.pair_infos)
@@ -72,9 +73,9 @@ class CropDataset(Dataset):
     def __getitem__(self, idx):
         (idx0, idx1), overlap_score, pair_height_map_name = self.pair_infos[idx]
         height_map_name0, height_map_name1 = pair_height_map_name
-        compensate_height_diff = self.compensate_height_diff
-        if height_map_name0 == height_map_name1:
-            compensate_height_diff = False
+        # compensate_height_diff = self.compensate_height_diff
+        # if height_map_name0 == height_map_name1:
+        #     compensate_height_diff = False
 
         # read grayscale image and mask. (1, h, w) and (h, w)
         img_name0 = osp.join(self.root_dir, self.scene_info['image_paths'][idx0])
@@ -141,7 +142,7 @@ class CropDataset(Dataset):
         
         if self.compensate_height_diff:
             data.update({
-                'compensate_height_diff': compensate_height_diff,
+                'compensate_height_diff': self.compensate_height_diff,
                 'T0': torch.tensor(T0, dtype=torch.float),
                 'T1': torch.tensor(T1, dtype=torch.float),
                 'height_map0': height_map0,
