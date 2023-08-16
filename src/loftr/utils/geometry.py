@@ -94,8 +94,6 @@ def warp_kpts_chd(kpts0, depth0, depth1, height_map0, height_map_info0, T0, T1, 
     x_min = height_map_info0[:,1].reshape(-1,1,1)
     y_min = height_map_info0[:,2].reshape(-1,1,1)
     xy_min = torch.cat([x_min, y_min], dim=-1)
-    print('xy_min', xy_min.shape)
-    print(xy_min)
 
     kpts0_long = kpts0.round().long()
 
