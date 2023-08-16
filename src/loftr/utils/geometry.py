@@ -89,7 +89,8 @@ def warp_kpts_chd(kpts0, depth0, depth1, height_map0, height_map_info0, T0, T1, 
         calculable_mask (torch.Tensor): [N, L]
         warped_keypoints0 (torch.Tensor): [N, L, 2] <x0_hat, y1_hat>
     """
-
+    print('height_map_info0', height_map_info0.shape)
+    print('depth0', depth0.shape)
     cell_size = height_map_info0[0]
     x_min = height_map_info0[1]
     y_min = height_map_info0[2]
