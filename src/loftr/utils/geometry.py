@@ -117,7 +117,7 @@ def warp_kpts_chd(kpts0, depth0, depth1, height_map0, height_map_info0, T0, T1, 
     # Get x, y coordinates
     w_kpts0_ground_xy = w_kpts0_ground[:, :2, :].transpose(1, 2)    # (N, L, 2)
     print('w_kpts0_ground_xy', w_kpts0_ground_xy.shape)
-    print('xy', torch.cat([x_min, y_min], dim=-1).unsqueeze(1).shape)
+    print('xy', x_min.shape)
     print('cell', cell_size.unsqueeze(1))
     
     # Move indices to the range of the height map
