@@ -91,9 +91,9 @@ def warp_kpts_chd(kpts0, depth0, depth1, height_map0, height_map_info0, T0, T1, 
     """
     print('height_map_info0', height_map_info0.shape)
     print('depth0', depth0.shape)
-    cell_size = height_map_info0[:,0]
-    x_min = height_map_info0[:,1]
-    y_min = height_map_info0[:,2]
+    cell_size = height_map_info0[:,0].reshape(-1,1)
+    x_min = height_map_info0[:,1].reshape(-1,1)
+    y_min = height_map_info0[:,2].reshape(-1,1)
 
     kpts0_long = kpts0.round().long()
 
