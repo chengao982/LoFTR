@@ -33,5 +33,5 @@ python -u ./train.py \
     --num_sanity_val_steps=10 \
     --benchmark=True \
     --max_epochs=60 \
-    --ckpt_path="weights/outdoor_ds.ckpt"
-    # --ckpt_path="weights/last.ckpt"
+    --ckpt_path="weights/last.ckpt"
+    # --ckpt_path="weights/outdoor_ds.ckpt"
