@@ -26,7 +26,6 @@ cfg.DATASET.MGDPT_DEPTH_PAD = False  # pad depthmap to square with size = 2000
 # trian real crop images. For synthetic dataset, set to False
 cfg.DATASET.CROP_IMG_CROP = 3000  # crop before resize, longer edge=3000
 
-cfg.LOFTR.MATCH_COARSE.THR = 0.3
 cfg.TRAINER.EPI_ERR_THR = 1e-4
 
 # compensate for height difference 
