@@ -67,7 +67,7 @@ class CropDataset(Dataset):
         if self.compensate_height_diff:
             self.height_maps = read_crop_height_map(self.scene_info['height_map_paths'].item(), pad_size=3000)
 
-        print('compensate_height_diff:', self.compensate_height_diff)
+        print('\ncompensate_height_diff:', self.compensate_height_diff, '\n')
 
     def __len__(self):
         return len(self.pair_infos)
