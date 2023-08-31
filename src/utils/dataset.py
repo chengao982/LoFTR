@@ -276,11 +276,11 @@ def read_crop_depth(path, crop=None):
 #     # print('height_map.shape', height_map.shape)
 #     return height_map
 
-def read_crop_height_map(height_map_paths, pad_size=3000):
+def read_crop_height_map(height_map_paths, pad_size):
     """
     For real images
     height map of the real field
-    pad or cut size to (3000, 3000)
+    pad or cut size to (pad_size, pad_size)
     """
     height_maps = {}
     for date, path in height_map_paths.items():
@@ -297,7 +297,7 @@ def read_crop_height_map(height_map_paths, pad_size=3000):
         height_map = pad_bottom_right_cut(height_map, pad_size)
         height_map = set_boarder_to_zero(height_map)
 
-        height_map = torch.from_numpy(height_map).float()  # (3000, 3000)
+        height_map = torch.from_numpy(height_map).float()  # (6000, 6000)
         # print('height_map.shape', height_map.shape)
 
         height_maps[date] = (height_map, height_map_info)

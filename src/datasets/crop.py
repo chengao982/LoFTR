@@ -21,6 +21,7 @@ class CropDataset(Dataset):
                  augment_fn=None,
                  img_crop=None,
                  compensate_height_diff=False,
+                 crop_heightmap_pad=3000,
                  **kwargs):
         """
         Manage one scene(npz_path) of Crop dataset.
@@ -65,7 +66,7 @@ class CropDataset(Dataset):
 
         # load height maps for later use
         if self.compensate_height_diff:
-            self.height_maps = read_crop_height_map(self.scene_info['height_map_paths'].item(), pad_size=3000)
+            self.height_maps = read_crop_height_map(self.scene_info['height_map_paths'].item(), pad_size=crop_heightmap_pad)
 
         print('\ncompensate_height_diff:', self.compensate_height_diff)
 

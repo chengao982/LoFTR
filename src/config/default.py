@@ -100,6 +100,7 @@ _CN.DATASET.MGDPT_DF = 8
 
 # Crop-only options
 _CN.DATASET.CROP_IMG_CROP = 0  # crop before resize
+_CN.DATASET.CROP_HEIGHTMAP_PAD = 3000 # pad/cut the height map to 3000*3000
 
 ##############  Trainer  ##############
 _CN.TRAINER = CN()
