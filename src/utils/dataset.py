@@ -298,7 +298,7 @@ def read_crop_height_map(height_map_paths, pad_size):
         height_map = set_boarder_to_zero(height_map)
 
         height_map = torch.from_numpy(height_map).float()  # (6000, 6000)
-        # print('height_map.shape', height_map.shape)
+        print('height_map.shape', height_map.shape)
 
         height_maps[date] = (height_map, height_map_info)
 
