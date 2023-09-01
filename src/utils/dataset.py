@@ -357,15 +357,15 @@ def cut_crop_height_map(height_map_tuple, pose, cut_size):
     output size should be (cut_size, cut_size)
     """
     height_map, height_map_info = height_map_tuple
-    cell_size = height_map_info[0],
-    x_min = height_map_info[1],
-    y_min = height_map_info[2],
+    cell_size = height_map_info[0].item(),
+    x_min = height_map_info[1].item(),
+    y_min = height_map_info[2].item(),
     
     original_size = height_map.shape[0]
     assert original_size >= cut_size, f"original size smaller than cut size{original_size} < {cut_size}"
 
-    x0 = np.round((pose[0,3]-x_min)/cell_size)
-    y0 = np.round((pose[1,3]-y_min)/cell_size)
+    x0 = round((pose[0,3]-x_min)/cell_size)
+    y0 = round((pose[1,3]-y_min)/cell_size)
     print('x0y0',x0,y0)
 
     height_map_new, x_start, y_start = cut_square_from_heightmap(height_map, x0, y0, cut_size)
