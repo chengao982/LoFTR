@@ -362,7 +362,7 @@ def cut_crop_height_map(height_map_tuple, pose, cut_size):
     y_min = height_map_info[2],
     
     original_size = height_map.shape[0]
-    assert original_size >= max(cut_size), f"original size smaller than cut size{original_size} < {cut_size}"
+    assert original_size >= cut_size, f"original size smaller than cut size{original_size} < {cut_size}"
 
     x0 = round((pose[0,3]-x_min)/cell_size)
     y0 = round((pose[1,3]-y_min)/cell_size)
