@@ -360,7 +360,7 @@ def cut_crop_height_map(height_map_tuple, pose, cut_size):
     cell_size = height_map_info[0].item(),
     x_min = height_map_info[1].item(),
     y_min = height_map_info[2].item(),
-    print(height_map_info)
+    print(height_map_info.shape)
     print(x_min)
     
     original_size = height_map.shape[0]
