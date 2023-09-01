@@ -357,6 +357,7 @@ def cut_crop_height_map(height_map_tuple, pose, cut_size):
     output size should be (cut_size, cut_size)
     """
     height_map, height_map_info = height_map_tuple
+    height_map_info = np.array(height_map_info)
     cell_size = height_map_info[0].item(),
     x_min = height_map_info[1].item(),
     y_min = height_map_info[2].item(),
