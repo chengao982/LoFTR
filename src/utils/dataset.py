@@ -115,6 +115,51 @@ def set_boarder_to_zero(inp):
     inp[:, -1] = 0
     return inp
 
+def cut_square_from_heightmap(height_map, center_x, center_y, side_length):
+    """
+    Cut a square from a PyTorch Tensor based on center coordinates and side length.
+
+    Args:
+        input_tensor (torch.Tensor): Input n*n PyTorch Tensor.
+        center_x (int): X-coordinate of the center of the new square.
+        center_y (int): Y-coordinate of the center of the new square.
+        side_length (int): Length of the side of the square.
+
+    Returns:
+        torch.Tensor: A new square Tensor cut from the input Tensor, padded with zeros.
+    """
+    n = height_map.shape[0]  # Assuming input_tensor is n*n
+
+    # Calculate the coordinates for cropping the square
+    start_x = max(center_x - side_length // 2, 0)
+    end_x = min(center_x + side_length // 2, n)
+    start_y = max(center_y - side_length // 2, 0)
+    end_y = min(center_y + side_length // 2, n)
+
+    # Create an empty square tensor filled with zeros
+    square_tensor = torch.zeros(side_length, side_length, dtype=height_map.dtype)
+
+    # Calculate the corresponding region in the input tensor
+    input_region = height_map[start_y:end_y, start_x:end_x]
+
+    # Calculate the size of the region in both dimensions
+    region_height, region_width = input_region.shape
+
+    # Calculate the starting positions for copying into the square tensor
+    copy_start_x = max(side_length // 2 - center_x, 0)
+    copy_start_y = max(side_length // 2 - center_y, 0)
+
+    # Calculate the ending positions for copying into the square tensor
+    copy_end_x = copy_start_x + region_width
+    copy_end_y = copy_start_y + region_height
+
+    # Copy the input region into the square tensor
+    square_tensor[copy_start_y:copy_end_y, copy_start_x:copy_end_x] = input_region
+
+    start_x = center_x - side_length // 2
+    start_y = center_y - side_length // 2
+
+    return square_tensor, start_x, start_y
 
 # --- MEGADEPTH ---
 
@@ -279,7 +324,7 @@ def read_crop_depth(path, crop=None):
 def read_crop_height_map(height_map_paths, pad_size):
     """
     For real images
-    height map of the real field
+    read height map of the interested field area from file
     pad or cut size to (pad_size, pad_size)
     """
     height_maps = {}
@@ -303,3 +348,41 @@ def read_crop_height_map(height_map_paths, pad_size):
         height_maps[date] = (height_map, height_map_info)
 
     return height_maps
+
+def cut_crop_height_map(height_map_tuple, pose, cut_size):
+    """
+    For real images
+    select only part of the raw height map that covers the area of the image
+    to shrink the size while keep high resolution
+    output size should be (cut_size, cut_size)
+    """
+    height_map, height_map_info = height_map_tuple
+    cell_size = height_map_info[0],
+    x_min = height_map_info[1],
+    y_min = height_map_info[2],
+    
+    original_size = height_map.shape[0]
+    assert original_size >= max(cut_size), f"original size smaller than cut size{original_size} < {cut_size}"
+
+    x0 = round((pose[0,3]-x_min)/cell_size)
+    y0 = round((pose[1,3]-y_min)/cell_size)
+
+    height_map_new, x_start, y_start = cut_square_from_heightmap(height_map, x0, y0, cut_size)
+    height_map_new = set_boarder_to_zero(height_map_new)
+    print('height_map.shape', height_map.shape)
+
+    x_min_new = x_min + cell_size * x_start
+    x_max_new = x_min_new + cell_size * cut_size
+
+    y_min_new = y_min + cell_size * y_start
+    y_max_new = y_min_new + cell_size * cut_size
+
+    height_map_info_new = np.array([cell_size,
+                                    x_min_new,
+                                    y_min_new,
+                                    x_max_new,
+                                    y_max_new
+                                    ])
+    height_map_info_new = torch.from_numpy(height_map_info_new)
+
+    return (height_map_new, height_map_info_new)

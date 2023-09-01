@@ -75,6 +75,7 @@ class MultiSceneDataModule(pl.LightningDataModule):
         self.crop_img_crop = config.DATASET.CROP_IMG_CROP  # 3000
         self.compensate_height_diff = config.TRAINER.COMPENSATE_HEIGHT_DIFF
         self.crop_heightmap_pad = config.DATASET.CROP_HEIGHTMAP_PAD
+        self.crop_heightmap_cut = config.DATASET.CROP_HEIGHTMAP_CUT
 
         # 3.loader parameters
         self.train_loader_params = {
@@ -249,7 +250,8 @@ class MultiSceneDataModule(pl.LightningDataModule):
                                 img_crop=self.crop_img_crop,
                                 coarse_scale=self.coarse_scale,
                                 compensate_height_diff=self.compensate_height_diff,
-                                crop_heightmap_pad=self.crop_heightmap_pad))
+                                crop_heightmap_pad=self.crop_heightmap_pad,
+                                crop_heightmap_cut=self.crop_heightmap_cut))
             else:
                 raise NotImplementedError()
         return ConcatDataset(datasets)

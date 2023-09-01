@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset
 from loguru import logger
 
-from src.utils.dataset import read_crop_gray, read_crop_depth, read_crop_height_map
+from src.utils.dataset import read_crop_gray, read_crop_depth, read_crop_height_map, cut_crop_height_map
 
 
 class CropDataset(Dataset):
@@ -21,7 +21,8 @@ class CropDataset(Dataset):
                  augment_fn=None,
                  img_crop=None,
                  compensate_height_diff=False,
-                 crop_heightmap_pad=3000,
+                 crop_heightmap_pad=6000,
+                 crop_heightmap_cut=2000,
                  **kwargs):
         """
         Manage one scene(npz_path) of Crop dataset.
@@ -67,6 +68,7 @@ class CropDataset(Dataset):
         # load height maps for later use
         if self.compensate_height_diff:
             self.height_maps = read_crop_height_map(self.scene_info['height_map_paths'].item(), pad_size=crop_heightmap_pad)
+            self.crop_heightmap_cut = crop_heightmap_cut
 
         print('\ncompensate_height_diff:', self.compensate_height_diff)
 
@@ -92,27 +94,6 @@ class CropDataset(Dataset):
             img_name1, self.img_resize, self.df, None, self.img_crop)
             # np.random.choice([self.augment_fn, None], p=[0.5, 0.5]))
 
-        # read depth. shape: (h, w)
-        if self.mode in ['train', 'val']:
-            depth0 = read_crop_depth(osp.join(self.root_dir, self.scene_info['depth_paths'][idx0]), 
-                                     self.img_crop)
-            depth1 = read_crop_depth(osp.join(self.root_dir, self.scene_info['depth_paths'][idx1]), 
-                                     self.img_crop)
-            
-            if self.compensate_height_diff:
-                height_map_name0, height_map_name1 = pair_height_map_name
-                height_map0, height_map_info0 = self.height_maps[height_map_name0]
-                height_map1, height_map_info1 = self.height_maps[height_map_name1]
-                # height_map0 = read_crop_height_map(
-                #     osp.join(self.root_dir, self.scene_info['height_map_paths'][idx0]), height_map_name0)
-                # height_map1 = read_crop_height_map(
-                #     osp.join(self.root_dir, self.scene_info['height_map_paths'][idx1]), height_map_name1)
-            
-        else:
-            depth0 = depth1 = torch.tensor([])
-            if self.compensate_height_diff:
-                height_map0 = height_map1 = torch.tensor([])
-
         # read intrinsics of original size
         # K_0 = torch.tensor(self.scene_info['intrinsics'][idx0].copy(), dtype=torch.float).reshape(3, 3)
         # K_1 = torch.tensor(self.scene_info['intrinsics'][idx1].copy(), dtype=torch.float).reshape(3, 3)
@@ -125,6 +106,28 @@ class CropDataset(Dataset):
         # T_1to0 = T_0to1.inverse()
         T_0to1 = torch.tensor(np.matmul(np.linalg.inv(T1), T0), dtype=torch.float)[:4, :4]  # (4, 4)
         T_1to0 = T_0to1.inverse()
+
+
+        # read depth. shape: (h, w)
+        if self.mode in ['train', 'val']:
+            depth0 = read_crop_depth(osp.join(self.root_dir, self.scene_info['depth_paths'][idx0]), 
+                                     self.img_crop)
+            depth1 = read_crop_depth(osp.join(self.root_dir, self.scene_info['depth_paths'][idx1]), 
+                                     self.img_crop)
+            
+            if self.compensate_height_diff:
+                height_map_name0, height_map_name1 = pair_height_map_name
+                height_map0, height_map_info0 = cut_crop_height_map(self.height_maps[height_map_name0], T0, self.crop_heightmap_cut)
+                height_map1, height_map_info1 = cut_crop_height_map(self.height_maps[height_map_name1], T1, self.crop_heightmap_cut)
+                # height_map0 = read_crop_height_map(
+                #     osp.join(self.root_dir, self.scene_info['height_map_paths'][idx0]), height_map_name0)
+                # height_map1 = read_crop_height_map(
+                #     osp.join(self.root_dir, self.scene_info['height_map_paths'][idx1]), height_map_name1)
+            
+        else:
+            depth0 = depth1 = torch.tensor([])
+            if self.compensate_height_diff:
+                height_map0 = height_map1 = torch.tensor([])
 
         data = {
             'image0': image0,  # (1, h, w)
