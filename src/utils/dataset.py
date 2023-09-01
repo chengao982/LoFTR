@@ -364,8 +364,8 @@ def cut_crop_height_map(height_map_tuple, pose, cut_size):
     original_size = height_map.shape[0]
     assert original_size >= cut_size, f"original size smaller than cut size{original_size} < {cut_size}"
 
-    x0 = round((pose[0,3]-x_min)/cell_size)
-    y0 = round((pose[1,3]-y_min)/cell_size)
+    x0 = np.rint((pose[0,3]-x_min)/cell_size)
+    y0 = np.rint((pose[1,3]-y_min)/cell_size)
     print('x0y0',x0,y0)
 
     height_map_new, x_start, y_start = cut_square_from_heightmap(height_map, x0, y0, cut_size)
@@ -387,5 +387,6 @@ def cut_crop_height_map(height_map_tuple, pose, cut_size):
                                     y_max_new
                                     ])
     height_map_info_new = torch.from_numpy(height_map_info_new)
+    print(height_map_info_new)
 
     return (height_map_new, height_map_info_new)
