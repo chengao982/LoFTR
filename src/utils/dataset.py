@@ -327,6 +327,7 @@ def read_crop_height_map(height_map_paths, pad_size):
     read height map of the interested field area from file
     pad or cut size to (pad_size, pad_size)
     """
+    
     height_maps = {}
     for date, path in height_map_paths.items():
         height_map_dict = dict(np.load(path, allow_pickle=True))

@@ -67,7 +67,7 @@ class CropDataset(Dataset):
 
         # load height maps for later use
         if self.compensate_height_diff:
-            self.height_maps = read_crop_height_map(self.scene_info['height_map_paths'].item(), pad_size=crop_heightmap_pad)
+            self.height_maps = read_crop_height_map(self.scene_info['height_map_paths'].item(), pad_size=crop_heightmap_pad).to('cpu')
             self.crop_heightmap_cut = crop_heightmap_cut
 
         print('\ncompensate_height_diff:', self.compensate_height_diff)
@@ -117,8 +117,8 @@ class CropDataset(Dataset):
             
             if self.compensate_height_diff:
                 height_map_name0, height_map_name1 = pair_height_map_name
-                height_map0, height_map_info0 = cut_crop_height_map(self.height_maps[height_map_name0], T0, self.crop_heightmap_cut)
-                height_map1, height_map_info1 = cut_crop_height_map(self.height_maps[height_map_name1], T1, self.crop_heightmap_cut)
+                height_map0, height_map_info0 = cut_crop_height_map(self.height_maps[height_map_name0].to(image0.device), T0, self.crop_heightmap_cut)
+                height_map1, height_map_info1 = cut_crop_height_map(self.height_maps[height_map_name1].to(image0.device), T1, self.crop_heightmap_cut)
                 # height_map0 = read_crop_height_map(
                 #     osp.join(self.root_dir, self.scene_info['height_map_paths'][idx0]), height_map_name0)
                 # height_map1 = read_crop_height_map(
