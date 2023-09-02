@@ -337,20 +337,20 @@ def read_crop_height_map(height_map_paths, pad_size):
                                     height_map_dict['x_max'],
                                     height_map_dict['y_max']
         ])
-        height_map_info = torch.from_numpy(height_map_info).to('cpu')
+        height_map_info = torch.from_numpy(height_map_info)
 
         height_map = height_map_dict['height_map']
         height_map = pad_bottom_right_cut(height_map, pad_size)
         height_map = set_boarder_to_zero(height_map)
 
-        height_map = torch.from_numpy(height_map).float().to('cpu')  # (6000, 6000)
+        height_map = torch.from_numpy(height_map).float()  # (6000, 6000)
         # print('height_map.shape', height_map.shape)
 
         height_maps[date] = (height_map, height_map_info)
 
     return height_maps
 
-def cut_crop_height_map(height_map_tuple, pose, cut_size, device):
+def cut_crop_height_map(height_map_tuple, pose, cut_size):
     """
     For real images
     select only part of the raw height map that covers the area of the image
@@ -358,8 +358,6 @@ def cut_crop_height_map(height_map_tuple, pose, cut_size, device):
     output size should be (cut_size, cut_size)
     """
     height_map, height_map_info = height_map_tuple
-    height_map = height_map.to(device)
-    height_map_info = height_map_info.to(device)
     cell_size = height_map_info[0].item()
     x_min = height_map_info[1].item()
     y_min = height_map_info[2].item()
