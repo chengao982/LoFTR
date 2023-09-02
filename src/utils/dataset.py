@@ -383,6 +383,5 @@ def cut_crop_height_map(height_map_tuple, pose, cut_size):
                                     y_max_new
                                     ])
     height_map_info_new = torch.from_numpy(height_map_info_new)
-    print(height_map_info_new)
 
     return (height_map_new, height_map_info_new)
